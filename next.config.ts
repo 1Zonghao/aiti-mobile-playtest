@@ -1,13 +1,15 @@
 import type { NextConfig } from "next";
 
 const isGitHubPages = process.env.GITHUB_PAGES === "true";
+const isCloudBase = process.env.CLOUDBASE === "true";
+const isStaticExport = isGitHubPages || isCloudBase;
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   allowedDevOrigins: ["127.0.0.1"],
-  output: isGitHubPages ? "export" : undefined,
+  output: isStaticExport ? "export" : undefined,
   basePath: isGitHubPages ? "/aiti-mobile-playtest" : undefined,
-  trailingSlash: isGitHubPages
+  trailingSlash: isStaticExport
 };
 
 export default nextConfig;
