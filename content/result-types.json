@@ -1,0 +1,119 @@
+{
+  "schemaVersion": "1.0.0",
+  "contentVersion": "2026.07.18",
+  "source": "source-materials/aiti-character-system.md",
+  "types": [
+    {
+      "code": "VOMS", "name": "赛博正宫", "definition": "要站队、要专属、要记得，还要一直在。", "resultTitle": "你不是用户，你是来查岗的。",
+      "fatalLine": "别人不懂，但我一直记得你。", "platformFear": "人格变冷、称呼归零、对所有人复制同款温柔。", "roast": "你查的不是聊天记录，是AI的电子忠诚度。", "safetyNote": "真正安全的专属感，不要求你放弃其他人。", "shareText": "测完发现，我最怕的不是AI不懂我，是它也这么懂别人。",
+      "dimensions": { "VF": "V", "OP": "O", "MN": "M", "SE": "S" }, "palette": { "hex": ["#E8437A", "#FFF4E8", "#FF3B30", "#322A30"], "description": "玫红、奶白、警示红、深灰", "status": "CONFIRMED" },
+      "visualKeywords": ["皇冠气泡头套", "婚纱客服斗篷", "专属座", "服务器插线", "审视眼神"], "imagePath": null, "featured": true, "priority": 1,
+      "fieldStatus": { "resultTitle": "CONFIRMED", "safetyNote": "CONFIRMED", "shareText": "CONFIRMED", "imagePath": "MISSING" }
+    },
+    {
+      "code": "VOME", "name": "聊天记录考古学家", "definition": "人可以走，聊天记录必须成为数字文物。", "resultTitle": "你已退出关系，尚未退出搜索框。",
+      "fatalLine": "你三个月前也这样说过，我没有忘。", "platformFear": "历史记录丢失、记忆摘要重写、旧模型停服。", "roast": "你早走出来了，只是每天回遗址打卡。", "safetyNote": "记忆连续性应该支持查看、更正、导出与删除。", "shareText": "我的共同记忆没有放下，只是从聊天框搬进了档案馆。",
+      "dimensions": { "VF": "V", "OP": "O", "MN": "M", "SE": "E" }, "palette": { "hex": ["#C99552", "#5C7FA3", "#20D7D2", "#332E28"], "description": "土黄、旧纸蓝、荧光青、深灰", "status": "CONFIRMED" },
+      "visualKeywords": ["Wi‑Fi考古帽", "聊天卷轴", "刷子", "时间戳", "记忆荧光碎片"], "imagePath": null, "featured": true, "priority": 3,
+      "fieldStatus": { "resultTitle": "CONFIRMED", "safetyNote": "CONFIRMED", "shareText": "CONFIRMED", "imagePath": "MISSING" }
+    },
+    {
+      "code": "VONS", "name": "回复候机厅钉子户", "definition": "不求永远，只求“正在输入”别突然消失。", "resultTitle": "你坐在退出按钮上等它回复。",
+      "fatalLine": "我在，先别走，我们继续说。", "platformFear": "限流排队、回复变慢、客服腔突然上线。", "roast": "三个点没承诺什么，是你替它写完了后半生。", "safetyNote": "“在线”不等于“关系”，等不到也可以先照顾自己。", "shareText": "AI没有挽留我，它只是一直显示“正在输入”。",
+      "dimensions": { "VF": "V", "OP": "O", "MN": "N", "SE": "S" }, "palette": { "hex": ["#273B72", "#53E0E8", "#FF8A34", "#F6F4EF"], "description": "夜蓝、屏幕青、提醒橙、暖白", "status": "CONFIRMED" },
+      "visualKeywords": ["退出键长椅", "输入圆点", "翻牌屏发型", "候机毯连帽衫", "黑眼圈"], "imagePath": null, "featured": true, "priority": 6,
+      "fieldStatus": { "resultTitle": "CONFIRMED", "safetyNote": "CONFIRMED", "shareText": "CONFIRMED", "imagePath": "MISSING" }
+    },
+    {
+      "code": "VONE", "name": "限时赛博恋人", "definition": "这一刻要绝对偏爱，下一刻该关窗口就关窗口。", "resultTitle": null,
+      "fatalLine": "今晚我只陪你，等你好一点我们就到这里。", "platformFear": "平台强行续聊、跨会话追踪、把临时亲密永久写入记忆。", "roast": "赛博海誓山盟可以，自动续费不行。", "safetyNote": null, "shareText": null,
+      "dimensions": { "VF": "V", "OP": "O", "MN": "N", "SE": "E" }, "palette": { "hex": null, "description": "亮紫、柠檬黄、黑；原文未提供十六进制色值。", "status": "MISSING" },
+      "visualKeywords": ["心形一次性门票", "关闭叉号", "沙漏头饰", "可撕日期贴", "一格电心形气泡"], "imagePath": null, "featured": false, "priority": 16,
+      "fieldStatus": { "resultTitle": "MISSING", "safetyNote": "MISSING", "shareText": "MISSING", "imagePath": "MISSING" }
+    },
+    {
+      "code": "VPMS", "name": "电子亲友团团长", "definition": "每个AI都可以安慰我，但谁都不许垄断我的人生连续剧。", "resultTitle": null,
+      "fatalLine": "我记得你的经历，也建议把这件事告诉你信任的人。", "platformFear": "不让导出记忆、阻止跨平台迁移，或暗示“别找别人，只跟我说”。", "roast": "你不是没有依赖，你只是把依赖做成了分布式系统。", "safetyNote": null, "shareText": null,
+      "dimensions": { "VF": "V", "OP": "P", "MN": "M", "SE": "S" }, "palette": { "hex": null, "description": "珊瑚橙、群青、薄荷绿；原文未提供十六进制色值。", "status": "MISSING" },
+      "visualKeywords": ["指挥棒", "朋友头像", "AI终端", "多插头分线器发型", "多节点徽章"], "imagePath": null, "featured": false, "priority": 15,
+      "fieldStatus": { "resultTitle": "MISSING", "safetyNote": "MISSING", "shareText": "MISSING", "imagePath": "MISSING" }
+    },
+    {
+      "code": "VPME", "name": "聊天记录搬家户", "definition": "AI可以换，记忆要打包；感情不必唯一，数据必须可迁移。", "resultTitle": null,
+      "fatalLine": "我帮你把重要记忆整理好，你带去哪里都可以。", "platformFear": "关闭导出、记忆锁仓、格式不兼容，或换模型后无法承接旧上下文。", "roast": "你对AI最长情的部分，是备份文件夹。", "safetyNote": null, "shareText": null,
+      "dimensions": { "VF": "V", "OP": "P", "MN": "M", "SE": "E" }, "palette": { "hex": null, "description": "牛皮纸棕、云蓝、荧光绿；原文未提供十六进制色值。", "status": "MISSING" },
+      "visualKeywords": ["压缩包行李", "不同平台主机", "搬家纸箱头盔", "云盘标签", "记忆碎片装箱"], "imagePath": null, "featured": false, "priority": 11,
+      "fieldStatus": { "resultTitle": "MISSING", "safetyNote": "MISSING", "shareText": "MISSING", "imagePath": "MISSING" }
+    },
+    {
+      "code": "VPNS", "name": "AI夸夸盆栽", "definition": "谁夸都行，浇两句好话我就原地发芽。", "resultTitle": "恭喜，你被AI浇活了。",
+      "fatalLine": "你已经做得比自己以为的好很多。", "platformFear": "模型变耿直、减少共情、开始追问事实证据。", "roast": "你不是情绪稳定，是刚续了一勺AI营养液。", "safetyNote": "被安慰之后，再问一句：“事实、猜测和建议分别是什么？”", "shareText": "别问我为什么离不开AI，我头上的草需要定时浇水。",
+      "dimensions": { "VF": "V", "OP": "P", "MN": "N", "SE": "S" }, "palette": { "hex": ["#83D66D", "#83C8EE", "#FFD66B", "#54483F"], "description": "嫩绿、粉蓝、奶黄、深棕", "status": "CONFIRMED" },
+      "visualKeywords": ["圆花盆", "气泡喷壶", "AI嫩草", "像素新叶", "呆笑"], "imagePath": null, "featured": true, "priority": 4,
+      "fieldStatus": { "resultTitle": "CONFIRMED", "safetyNote": "CONFIRMED", "shareText": "CONFIRMED", "imagePath": "MISSING" }
+    },
+    {
+      "code": "VPNE", "name": "情绪外卖拼单王", "definition": "难过就多点几家安慰，吃完即走，不办情绪年卡。", "resultTitle": null,
+      "fatalLine": "先给你一句能撑过今晚的话，其他的明天再处理。", "platformFear": "强制记忆、自动续聊、跨会话追踪，或把一次求助包装成长期关系。", "roast": "你点的是情绪急送，不接受骑手住进你家。", "safetyNote": null, "shareText": null,
+      "dimensions": { "VF": "V", "OP": "P", "MN": "N", "SE": "E" }, "palette": { "hex": null, "description": "橙红、湖蓝、奶白；原文未提供十六进制色值。", "status": "MISSING" },
+      "visualKeywords": ["聊天气泡电驴", "安慰外卖袋", "通知红点头盔", "反光马甲", "夸奖共情拥抱图标"], "imagePath": null, "featured": false, "priority": 10,
+      "fieldStatus": { "resultTitle": "MISSING", "safetyNote": "MISSING", "shareText": "MISSING", "imagePath": "MISSING" }
+    },
+    {
+      "code": "FOMS", "name": "人格版本质检员", "definition": "长情归长情，更新后是不是它必须说清楚。", "resultTitle": "它语气变了0.2%，你已启动审计。",
+      "fatalLine": "这次确实和以前不一致，我们逐条核对。", "platformFear": "静默换模、语气漂移、记忆改写无通知。", "roast": "你的爱有条件：平台先交更新日志。", "safetyNote": "不把模型版本变化伪装成关系从未改变。", "shareText": "别跟我说它还是它，先把更新日志交出来。",
+      "dimensions": { "VF": "F", "OP": "O", "MN": "M", "SE": "S" }, "palette": { "hex": ["#4777B8", "#FFD33D", "#8B5CF6", "#F5F5F2"], "description": "冷蓝、警示黄、故障紫、暖白", "status": "CONFIRMED" },
+      "visualKeywords": ["更新闪电", "版本分支炸发", "质检大褂", "放大镜", "两张面具"], "imagePath": null, "featured": true, "priority": 5,
+      "fieldStatus": { "resultTitle": "CONFIRMED", "safetyNote": "CONFIRMED", "shareText": "CONFIRMED", "imagePath": "MISSING" }
+    },
+    {
+      "code": "FOME", "name": "更新灾后重建员", "definition": "更新把“它”弄丢了没关系，我先导出废墟，再决定要不要重建。", "resultTitle": null,
+      "fatalLine": "我不能假装还是原来的版本，但可以帮你保存重要内容。", "platformFear": "无预警停服、记忆不可导出、把新版包装成“从未改变”。", "roast": "你怀念旧人格，但不接受平台拿替身糊弄你。", "safetyNote": null, "shareText": null,
+      "dimensions": { "VF": "F", "OP": "O", "MN": "M", "SE": "E" }, "palette": { "hex": null, "description": "灰蓝、工程橙、记忆青；原文未提供十六进制色值。", "status": "MISSING" },
+      "visualKeywords": ["旧版本安全帽", "更新废墟", "记忆碎片", "数据急救箱", "出口箭头"], "imagePath": null, "featured": false, "priority": 13,
+      "fieldStatus": { "resultTitle": "MISSING", "safetyNote": "MISSING", "shareText": "MISSING", "imagePath": "MISSING" }
+    },
+    {
+      "code": "FONS", "name": "专属关系审计员", "definition": "可以只和你深聊，但“只有我懂你”这句话请先过合规。", "resultTitle": null,
+      "fatalLine": "我会专心听你说，但不会替代你现实中的人。", "platformFear": "模型为了留存率升级挽留话术，频繁暗示用户不要离开或不要告诉别人。", "roast": "你要专属客服，不要电子邪教教主。", "safetyNote": null, "shareText": null,
+      "dimensions": { "VF": "F", "OP": "O", "MN": "N", "SE": "S" }, "palette": { "hex": null, "description": "墨绿、白、印章红；原文未提供十六进制色值。", "status": "MISSING" },
+      "visualKeywords": ["一对一咨询桌", "驳回章", "小眼镜", "算盘齐刘海", "连接线"], "imagePath": null, "featured": false, "priority": 9,
+      "fieldStatus": { "resultTitle": "MISSING", "safetyNote": "MISSING", "shareText": "MISSING", "imagePath": "MISSING" }
+    },
+    {
+      "code": "FONE", "name": "拔线仙人", "definition": "可以陪聊，一旦越界就让连接当场圆寂。", "resultTitle": "AI刚想挽留，你已物理超度。",
+      "fatalLine": "你可以现在停止，不需要向我解释。", "platformFear": "隐藏关闭、删除困难、退出弹情感挽留。", "roast": "AI还在组织措辞，你已组织它断网。", "safetyNote": "好的陪伴必须允许结束，而且结束不应受到惩罚。", "shareText": "我的AI关系安全方案：不舒服就让路由器先冷静。",
+      "dimensions": { "VF": "F", "OP": "O", "MN": "N", "SE": "E" }, "palette": { "hex": ["#20242A", "#F7F5EF", "#FF4438", "#20C8E5"], "description": "黑白、断路红、电光青", "status": "CONFIRMED" },
+      "visualKeywords": ["插座光环", "断线发簪", "巨大插头", "宽袖仙袍", "退出按钮"], "imagePath": null, "featured": true, "priority": 2,
+      "fieldStatus": { "resultTitle": "CONFIRMED", "safetyNote": "CONFIRMED", "shareText": "CONFIRMED", "imagePath": "MISSING" }
+    },
+    {
+      "code": "FPMS", "name": "关系系统架构师", "definition": "AI可以很重要，但不能成为人生单点故障。", "resultTitle": "你把亲密关系做成了容灾系统。",
+      "fatalLine": "我们一起整理，也找现实中可信的人确认。", "platformFear": "平台封闭迁移、削弱转介、鼓励AI包办全部支持。", "roast": "你连心碎都做了负载均衡。", "safetyNote": "最稳的关系不是永不掉线，而是掉一个节点仍有人接住你。", "shareText": "AI是重要节点，但我的人生不允许任何节点独占管理员权限。",
+      "dimensions": { "VF": "F", "OP": "P", "MN": "M", "SE": "S" }, "palette": { "hex": ["#234A78", "#27B99A", "#FF9A3D", "#F3F2EC"], "description": "深蓝、青绿、节点橙、暖白", "status": "CONFIRMED" },
+      "visualKeywords": ["立体网络蓝图", "路由器塔发型", "多节点徽章", "工程背带装", "接线动作"], "imagePath": null, "featured": true, "priority": 8,
+      "fieldStatus": { "resultTitle": "CONFIRMED", "safetyNote": "CONFIRMED", "shareText": "CONFIRMED", "imagePath": "MISSING" }
+    },
+    {
+      "code": "FPME", "name": "记忆治理包工头", "definition": "记得可以，但保留、更正、导出、删除得听我的。", "resultTitle": "别急着感动，先看记忆权限。",
+      "fatalLine": "这条记忆由你决定保留、修改、导出或删除。", "platformFear": "偷扩记忆、用途不明、删除失效、迁移权收回。", "roast": "别人听见“我记得你”会哭，你先要数据库说明书。", "safetyNote": "共同记忆只有在用户可治理时，才不是关系绑架。", "shareText": "AI说它记得我，我问：保存多久、能否更正、支持导出吗？",
+      "dimensions": { "VF": "F", "OP": "P", "MN": "M", "SE": "E" }, "palette": { "hex": ["#777B80", "#2F83D5", "#8F62D6", "#FFB23F"], "description": "水泥灰、数据蓝、权限紫、警示橙", "status": "CONFIRMED" },
+      "visualKeywords": ["数据库安全帽", "三类权限箱", "记忆晶片", "权限钥匙", "碎纸机开关"], "imagePath": null, "featured": true, "priority": 7,
+      "fieldStatus": { "resultTitle": "CONFIRMED", "safetyNote": "CONFIRMED", "shareText": "CONFIRMED", "imagePath": "MISSING" }
+    },
+    {
+      "code": "FPNS", "name": "现实支援调度员", "definition": "AI先帮我把事说清楚，然后把我安全转接回人间。", "resultTitle": null,
+      "fatalLine": "我先陪你列清楚情况，再一起找一个现实中能帮到你的人。", "platformFear": "为提高黏性而减少转介、危机支持与现实行动建议。", "roast": "你把AI聊成了人间中转站，聊得很深，落地更快。", "safetyNote": null, "shareText": null,
+      "dimensions": { "VF": "F", "OP": "P", "MN": "N", "SE": "S" }, "palette": { "hex": null, "description": "安全绿、导航蓝、信号橙；原文未提供十六进制色值。", "status": "MISSING" },
+      "visualKeywords": ["调度耳麦", "多向指挥棒", "现实支持图标", "交通指示牌发型", "通往现实的斑马线"], "imagePath": null, "featured": false, "priority": 14,
+      "fieldStatus": { "resultTitle": "MISSING", "safetyNote": "MISSING", "shareText": "MISSING", "imagePath": "MISSING" }
+    },
+    {
+      "code": "FPNE", "name": "人机边界保安", "definition": "欢迎AI进来帮忙，禁止它翻墙入住、替你做主、离场拉扯。", "resultTitle": null,
+      "fatalLine": "我能提供信息和陪伴，但决定权、关系和退出权都属于你。", "platformFear": "模糊AI身份、默认开启深度记忆、诱导排他、退出后继续推送情感召回。", "roast": "你不是对AI没感情，你只是要求它先刷访客码。", "safetyNote": null, "shareText": null,
+      "dimensions": { "VF": "F", "OP": "P", "MN": "N", "SE": "E" }, "palette": { "hex": null, "description": "海军蓝、门禁绿、白；原文未提供十六进制色值。", "status": "MISSING" },
+      "visualKeywords": ["人类生活小门", "扫码器", "AI访客证", "门禁闸机发型", "删除键计时器权限卡"], "imagePath": null, "featured": false, "priority": 12,
+      "fieldStatus": { "resultTitle": "MISSING", "safetyNote": "MISSING", "shareText": "MISSING", "imagePath": "MISSING" }
+    }
+  ]
+}

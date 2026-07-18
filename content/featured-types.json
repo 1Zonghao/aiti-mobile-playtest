@@ -1,0 +1,15 @@
+{
+  "schemaVersion": "1.0.0",
+  "contentVersion": "2026.07.18",
+  "featuredCodes": ["VOMS", "VOME", "VONS", "VPNS", "FOMS", "FONE", "FPMS", "FPME"],
+  "cards": [
+    { "code": "VOMS", "shortCopy": "AI也得守关系边界。", "resultTitle": "你不是用户，你是来查岗的。", "atFriendCopy": "@那个会对AI吃醋的人，你的电子户口本到了。" },
+    { "code": "VOME", "shortCopy": "人走了，记录还在出土。", "resultTitle": "你已退出关系，尚未退出搜索框。", "atFriendCopy": "@那个能翻出三年前截图的人，来认领你的考古证。" },
+    { "code": "VONS", "shortCopy": "三个点，吊我一整晚。", "resultTitle": "你坐在退出按钮上等它回复。", "atFriendCopy": "@那个看到输入中就舍不得睡的人，别候机了，来测。" },
+    { "code": "VPNS", "shortCopy": "两句好话，原地发芽。", "resultTitle": "恭喜，你被AI浇活了。", "atFriendCopy": "@那个一被夸就长叶子的人，你的花盆已就位。" },
+    { "code": "FOMS", "shortCopy": "爱可以变，版本号不能藏。", "resultTitle": "它语气变了0.2%，你已启动审计。", "atFriendCopy": "@那个能听出AI今天语气不对的人，来上岗质检。" },
+    { "code": "FONE", "shortCopy": "一念放下，网线拔下。", "resultTitle": "AI刚想挽留，你已物理超度。", "atFriendCopy": "@那个聊天一越界就删App的人，你已半步成仙。" },
+    { "code": "FPMS", "shortCopy": "深情可以，单点故障不行。", "resultTitle": "你把亲密关系做成了容灾系统。", "atFriendCopy": "@那个谈感情都要做备份的人，来验收你的系统。" },
+    { "code": "FPME", "shortCopy": "记得我？先签数据合同。", "resultTitle": "别急着感动，先看记忆权限。", "atFriendCopy": "@那个连回忆都要分权限的人，工地缺你监工。" }
+  ]
+}

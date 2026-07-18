@@ -1,0 +1,11 @@
+{
+  "schemaVersion": "1.0.0",
+  "contentVersion": "2026.07.18",
+  "unifiedDisclaimer": "本测试仅用于互动传播与AI关系安全讨论，不构成心理测量、临床判断或人格定论。结果描述的是情境中的选择倾向，不是给人盖章。",
+  "researchBoundary": {
+    "purpose": "娱乐性学术传播互动与AI关系安全讨论。",
+    "not": ["心理测量", "人格诊断", "临床判断", "真实依赖预测", "AI安全认证"],
+    "resultMeaning": "结果只描述具体AI互动情境中的选择倾向，不评价感情深浅，也不对人作诊断或定论。"
+  },
+  "forbiddenDiagnosticPhrases": ["你患有", "你被诊断为", "心理疾病", "临床确诊", "人格障碍"]
+}

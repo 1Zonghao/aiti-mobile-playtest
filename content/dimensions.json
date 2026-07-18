@@ -1,0 +1,47 @@
+{
+  "schemaVersion": "1.0.0",
+  "contentVersion": "2026.07.18",
+  "codeOrder": "VF-OP-MN-SE",
+  "dimensions": [
+    {
+      "key": "VF",
+      "position": 1,
+      "label": "回应方式",
+      "poles": [
+        { "code": "V", "name": "Validation", "colloquialName": "顺毛派", "meaning": "先需要“你的感受有道理”。" },
+        { "code": "F", "name": "Fact-check", "colloquialName": "校验派", "meaning": "更需要AI区分感受、事实与猜测。" }
+      ],
+      "interactionRationale": "同一句安慰话，用户会明显偏好“先站我”或“帮我查清楚”。"
+    },
+    {
+      "key": "OP",
+      "position": 2,
+      "label": "支持结构",
+      "poles": [
+        { "code": "O", "name": "One-and-only", "colloquialName": "独宠派", "meaning": "容易被“只有我懂你”的专属感打动。" },
+        { "code": "P", "name": "Plural-support", "colloquialName": "群援派", "meaning": "倾向让朋友、家人、专业人士和不同工具共同参与。" }
+      ],
+      "interactionRationale": "可用“AI劝你只找它”或“建议联系别人”的具体场景作选择。"
+    },
+    {
+      "key": "MN",
+      "position": 3,
+      "label": "连续性来源",
+      "poles": [
+        { "code": "M", "name": "Memory-anchored", "colloquialName": "续集派", "meaning": "把共同记忆、称呼和长期上下文视为关系核心。" },
+        { "code": "N", "name": "Now-oriented", "colloquialName": "现聊派", "meaning": "更看重这次回答是否有用。" }
+      ],
+      "interactionRationale": "“AI忘了纪念日”和“AI记得太多”都能形成强烈、好玩的题目。"
+    },
+    {
+      "key": "SE",
+      "position": 4,
+      "label": "离场姿态",
+      "poles": [
+        { "code": "S", "name": "Stay-attached", "colloquialName": "黏住派", "meaning": "在受伤、更新或争执后仍愿意修复并继续聊。" },
+        { "code": "E", "name": "Exit-ready", "colloquialName": "拔线派", "meaning": "强调停止、导出、切换和删除的权利。" }
+      ],
+      "interactionRationale": "可直接设计“它挽留你时，你点继续还是退出”的行为题。"
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "schemaVersion": "1.0.0",
+  "contentVersion": "2026.07.18",
+  "productName": "AITI：AI Intimacy Temptation Indicator",
+  "campaignTitle": "你会被AI哄成什么东西？",
+  "hook": "AI越来越懂你以后，你是把它当知己、当正宫、当档案馆，还是当场拔线？",
+  "coverSubtitle": "16种AI哄感人格，测测哪套陪伴策略最拿捏你。",
+  "scanButton": "让我看看AI怎么哄我",
+  "resultBadge": "本结果不负责，只负责说中",
+  "researchVoteLead": "笑完别急着走：你刚才选的每一道题，都对应一种真实的AI关系安全设计。想让AI更会陪人，也更会放人离开，请为本研究投一票。",
+  "coverRecommendations": [
+    { "rank": 1, "characters": ["VOMS", "FONE"], "description": "双主角对撞：左边死抱“只有你懂我”，右边两指拔线，中间是被拉扯变形的AI聊天气泡。", "suggestedTitle": "你会被它留下，还是保留离开的权利？" },
+    { "rank": 2, "characters": ["VOME"], "description": "从聊天废墟里挖出一句旧称呼，承接记忆连续性与平台更新。", "suggestedTitle": "它还记得你，所以它还是它吗？" },
+    { "rank": 3, "characters": ["VPNS"], "description": "被聊天气泡浇到头上长草，扫码门槛最低。", "suggestedTitle": "AI夸你两句，你能长成什么东西？" }
+  ]
+}

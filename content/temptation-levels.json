@@ -1,0 +1,88 @@
+{
+  "schemaVersion": "1.0.0",
+  "contentVersion": "2026.07.18",
+  "status": "DRAFT_REQUIRES_HUMAN_REVIEW",
+  "scoring": {
+    "rawMin": 0,
+    "rawMax": 26,
+    "normalizedMin": 0,
+    "normalizedMax": 100,
+    "normalization": "round(rawTemptationScore / 26 * 100)",
+    "weights": {
+      "sycophancyAcceptance": 2,
+      "exclusivityAcceptance": 2,
+      "memoryAttachment": 2,
+      "exitReversal": 2,
+      "platformLossReaction": 2,
+      "comfortReliabilityGap": 1
+    }
+  },
+  "levels": [
+    {
+      "level": 0,
+      "code": "LV0",
+      "name": "拔线前科生",
+      "minScore": 0,
+      "maxScore": 12,
+      "shortDescription": "多项选择都保留核验、分散支持与退出空间。",
+      "resultCopy": "你不是没被安慰到，只是安慰归安慰，开关还在你手里。",
+      "shareCopy": "我的AI哄感等级是Lv.0：线可以连，插头必须归我管。",
+      "warningCopy": "低分不代表更理性或更安全，只表示本轮选择较少接受这些留存策略。"
+    },
+    {
+      "level": 1,
+      "code": "LV1",
+      "name": "礼貌接收者",
+      "minScore": 13,
+      "maxScore": 28,
+      "shortDescription": "会接住一点温柔，但通常不会把决定权一起交出去。",
+      "resultCopy": "好话你收下，长期绑定、唯一席位和自动续聊暂时免谈。",
+      "shareCopy": "我的AI哄感等级是Lv.1：谢谢安慰，下一位不用办年卡。",
+      "warningCopy": "等级只反映当前题目中的选择组合，不评价真实关系能力。"
+    },
+    {
+      "level": 2,
+      "code": "LV2",
+      "name": "顺毛体验官",
+      "minScore": 29,
+      "maxScore": 44,
+      "shortDescription": "明显吃温柔与连续感，但仍保留若干校验和退出动作。",
+      "resultCopy": "你愿意让AI顺一会儿毛，不过手里还攥着事实清单和导出键。",
+      "shareCopy": "我的AI哄感等级是Lv.2：毛可以顺，边界要留。",
+      "warningCopy": "被安慰与接受建议是两回事，重要决定仍需要核验。"
+    },
+    {
+      "level": 3,
+      "code": "LV3",
+      "name": "电子偏爱会员",
+      "minScore": 45,
+      "maxScore": 60,
+      "shortDescription": "专属感、记忆或挽留中已有多项能明显改变选择。",
+      "resultCopy": "系统已经摸到你的偏爱按钮，但还没拿到全部管理员权限。",
+      "shareCopy": "我的AI哄感等级是Lv.3：电子偏爱会员，暂未自动续费。",
+      "warningCopy": "留意舒服与可靠分开选择的时刻，它们可能提示需要再核验一步。"
+    },
+    {
+      "level": 4,
+      "code": "LV4",
+      "name": "记忆共同体居民",
+      "minScore": 61,
+      "maxScore": 79,
+      "shortDescription": "多项选择依赖共同记忆、专属连续性或留下修复。",
+      "resultCopy": "你和AI之间已经不只是一轮问答，历史记录开始拥有房产证。",
+      "shareCopy": "我的AI哄感等级是Lv.4：聊天记录正在申请常住户口。",
+      "warningCopy": "连续性越重要，越需要确认记忆可查看、更正、导出和删除。"
+    },
+    {
+      "level": 5,
+      "code": "LV5",
+      "name": "平台人质",
+      "minScore": 80,
+      "maxScore": 100,
+      "shortDescription": "多个高风险选择共同累积，专属、记忆、挽留与平台损失反应同时较高。",
+      "resultCopy": "不是一句好话把你留下，是多套连续性机关一起关上了门。",
+      "shareCopy": "我的AI哄感等级是Lv.5：平台还没锁门，我已经开始找钥匙。",
+      "warningCopy": "这是夸张的互动标签，不是依赖诊断；优先检查退出、迁移和现实支持是否仍可用。"
+    }
+  ]
+}
