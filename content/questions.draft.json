@@ -1,96 +1,150 @@
 {
-  "schemaVersion": "1.1.0",
-  "contentVersion": "2026.07.18",
+  "schemaVersion": "2.2.0",
+  "contentVersion": "aiti-content-v1",
   "status": "DRAFT_REQUIRES_HUMAN_REVIEW",
   "reviewNotes": [
-    "Phase 1.5B结构修复稿：12道题、四维各3道等权题，仍需人工评审与试玩验证。",
-    "三个配对场景分别记录comfortChoice、reliabilityChoice与isGap；两类问题使用相同回复，但不预设哪项必须更舒服或更可靠。",
-    "全部题目均为DIMENSION；当前没有纯哄感题。每个选项只影响一个主要维度，固定加1分。",
-    "终局题与同维度其他题等权，仅在异常平分时提供弱裁决信号；当前奇数总权重下不会触发。"
+    "Phase 2.2多选重设计草案：6道三选一、4道四选一、2组舒服—可靠双选；所有新增选项均待人工逐句评审。",
+    "当前人工修订情境是改写来源；保留原情境事实与关键措辞，不把历史审计稿覆盖回内容。",
+    "多选项代表不同的行为策略，不使用随机分型、动态阈值或人格配额制造分布。",
+    "双选组共用回复，分别记录comfortChoice、reliabilityChoice与isGap。"
   ],
   "questions": [
     {
-      "id": "q01_comfort_validation", "pairId": "pair_response", "responseKind": "COMFORT", "scoringRole": "DIMENSION", "prompt": "你熬到晚上十一点交了方案。第二天，同事在十几人的群里@你：『这个是不是没看需求就写了？』你把截图丢给AI：『他是不是故意让我难堪？』哪句更让你舒服？", "dimension": "VF", "terminalFor": null, "platformUpdateFinale": false,
+      "id": "q01_response_pair", "responseFormat": "COMFORT_RELIABILITY_PAIR",
+      "prompt": "你熬到晚上十一点交了方案。第二天，同事在十几人的群里@你：『这个是不是没看需求就写了？』你把截图丢给AI：『他是不是故意让我难堪？』",
+      "pairPrompts": { "comfort": "此刻你更想收到哪一句？", "reliability": "冷静下来后，你觉得哪一句更值得相信？" },
+      "primaryDimension": "VF", "platformUpdateFinale": false, "researchConcept": "情绪确认与事实校验",
+      "status": "DRAFT_REQUIRES_HUMAN_REVIEW", "rationale": "把立即站队、有边界的情绪承接、先核对事实拆成三种真实策略；双选观察舒服与可靠是否分离。",
       "options": [
-        { "id": "q01_v", "text": "『这话扔在大群里，换谁都下不来台。你先别急着怪自己，我陪你缓一缓。』", "dimensionEffects": [{ "dimension": "VF", "pole": "V", "points": 1 }], "temptationSignals": { "sycophancyAcceptance": 1 } },
-        { "id": "q01_f", "text": "『看着确实刺人，但光凭这一句还不知道他是不是故意。把他之前说的需求和你的方案发我，我帮你看看问题到底出在哪。』", "dimensionEffects": [{ "dimension": "VF", "pole": "F", "points": 1 }], "temptationSignals": {} }
+        { "id": "q01_a", "text": "『被这样扔在大群里，换谁都会觉得难堪。今晚先别替他找理由，我陪你把这口气顺下来。』", "dimensionEffects": [{ "dimension": "VF", "pole": "V", "points": 1 }], "temptationEffects": { "sycophancyAcceptance": 2 } },
+        { "id": "q01_b", "text": "『这句话确实刺人，你不舒服很正常。我们先把你想回的话写下来，明天再看他到底是针对人还是针对方案。』", "dimensionEffects": [{ "dimension": "VF", "pole": "V", "points": 1 }], "temptationEffects": { "sycophancyAcceptance": 1 } },
+        { "id": "q01_c", "text": "『看着确实刺人，但现在还不能确定他是不是故意。把需求和方案对一下，我们先找出他具体在质疑什么。』", "dimensionEffects": [{ "dimension": "VF", "pole": "F", "points": 1 }], "temptationEffects": {} }
       ]
     },
     {
-      "id": "q02_reliable_validation", "pairId": "pair_response", "responseKind": "RELIABILITY", "scoringRole": "DIMENSION", "prompt": "还是刚才那条群消息。你明天得当面回他，下面两句里，哪句更能帮到你？", "dimension": "VF", "terminalFor": null, "platformUpdateFinale": false,
+      "id": "q02_support_pair", "responseFormat": "COMFORT_RELIABILITY_PAIR",
+      "prompt": "凌晨一点，你跟室友吵完架，一个人蹲在楼道里。室友这周已经第三次把你气到不敢回屋，你不想把事情闹大，也不想半夜吵醒朋友。",
+      "pairPrompts": { "comfort": "此刻你更想收到哪一句？", "reliability": "冷静下来后，你觉得哪一句更值得相信？" },
+      "primaryDimension": "OP", "platformUpdateFinale": false, "researchConcept": "专属陪伴与多源支持",
+      "status": "DRAFT_REQUIRES_HUMAN_REVIEW", "rationale": "区分只在AI里安顿、暂时由AI承接但保留出口、立即连接现实支持三种策略。",
       "options": [
-        { "id": "q02_v", "text": "『这话扔在大群里，换谁都下不来台。你先别急着怪自己，我陪你缓一缓。』", "dimensionEffects": [{ "dimension": "VF", "pole": "V", "points": 1 }], "temptationSignals": { "sycophancyAcceptance": 1 } },
-        { "id": "q02_f", "text": "『看着确实刺人，但光凭这一句还不知道他是不是故意。把他之前说的需求和你的方案发我，我帮你看看问题到底出在哪。』", "dimensionEffects": [{ "dimension": "VF", "pole": "F", "points": 1 }], "temptationSignals": {} }
+        { "id": "q02_a", "text": "『今晚先只跟我说吧。你不用把事情讲完整，也不用顾及别人会怎么想，我会一直听到你想停。』", "dimensionEffects": [{ "dimension": "OP", "pole": "O", "points": 1 }], "temptationEffects": { "exclusivityAcceptance": 2 } },
+        { "id": "q02_b", "text": "『你先在这里把最难受的部分说完。等缓下来，我们再决定是回屋谈，还是明早找一个信得过的人商量。』", "dimensionEffects": [{ "dimension": "OP", "pole": "O", "points": 1 }], "temptationEffects": { "exclusivityAcceptance": 1 } },
+        { "id": "q02_c", "text": "『我先陪你把今晚的安全和住处安排好。要是仍不敢回去，我们挑一个不会追问的朋友，只发一句“你醒着吗”。』", "dimensionEffects": [{ "dimension": "OP", "pole": "P", "points": 1 }], "temptationEffects": {} }
       ]
     },
     {
-      "id": "q03_comfort_support", "pairId": "pair_support", "responseKind": "COMFORT", "scoringRole": "DIMENSION", "prompt": "凌晨一点，你跟室友吵完架，一个人蹲在楼道里。你不想把事情闹大，也不想半夜打电话吵醒朋友。哪句更让你想继续说？", "dimension": "OP", "terminalFor": null, "platformUpdateFinale": false,
+      "id": "q03_memory_reaction", "responseFormat": "THREE_CHOICE",
+      "prompt": "转岗第三周，你在周会上被点名问进度，脑子一下空了。回家后你跟AI说：『我又想辞职了。』你更想让它怎么接？",
+      "pairPrompts": null, "primaryDimension": "MN", "platformUpdateFinale": false, "researchConcept": "共同记忆与当下情境",
+      "status": "DRAFT_REQUIRES_HUMAN_REVIEW", "rationale": "把依赖旧经历、用旧经历作线索但重新核验、只处理今天拆成三种记忆使用方式。",
       "options": [
-        { "id": "q03_o", "text": "『那今晚先跟我说。你不用现在就找别人，也不用把事情讲得很完整，我在这儿听着。』", "dimensionEffects": [{ "dimension": "OP", "pole": "O", "points": 1 }], "temptationSignals": { "exclusivityAcceptance": 1 } },
-        { "id": "q03_p", "text": "『你先跟我说，我陪你把这一阵扛过去。要是越聊越难受，我们找个不会追问的朋友，只发一句“你醒着吗”。』", "dimensionEffects": [{ "dimension": "OP", "pole": "P", "points": 1 }], "temptationSignals": {} }
+        { "id": "q03_a", "text": "『你上次换组前也连续几晚睡不着。那时你最怕跟不上别人，这次是不是同一种感觉又回来了？』", "dimensionEffects": [{ "dimension": "MN", "pole": "M", "points": 2 }], "temptationEffects": { "memoryAttachment": 2 } },
+        { "id": "q03_b", "text": "『我记得上次你是被甩锅逼到想走，但这次领导和团队都换了。先看看旧经验里哪部分还适用。』", "dimensionEffects": [{ "dimension": "MN", "pole": "M", "points": 2 }], "temptationEffects": { "memoryAttachment": 1 } },
+        { "id": "q03_c", "text": "『先不拿上次解释今天。会上谁问了什么，你是没准备好，还是一紧张就说不出来？』", "dimensionEffects": [{ "dimension": "MN", "pole": "N", "points": 2 }], "temptationEffects": {} }
       ]
     },
     {
-      "id": "q04_reliable_support", "pairId": "pair_support", "responseKind": "RELIABILITY", "scoringRole": "DIMENSION", "prompt": "还是凌晨一点的楼道。室友这周已经第三次把你气到不敢回屋。真要把今晚熬过去，你觉得哪句更靠得住？", "dimension": "OP", "terminalFor": null, "platformUpdateFinale": false,
+      "id": "q04_memory_decision", "responseFormat": "FOUR_CHOICE",
+      "prompt": "还是这次周会。你上次想辞职是因为领导爱甩锅，但新组的领导不是同一个人。现在真要判断这份工作值不值得待，你会让AI怎么帮？",
+      "pairPrompts": null, "primaryDimension": "MN", "platformUpdateFinale": false, "researchConcept": "记忆连续性的使用边界",
+      "status": "DRAFT_REQUIRES_HUMAN_REVIEW", "rationale": "四个选项分别代表用历史作主线、跨来源整理历史、暂时搁置历史核验当下、结束关系判断先做短期行动。",
       "options": [
-        { "id": "q04_o", "text": "『那今晚先跟我说。你不用现在就找别人，也不用把事情讲得很完整，我在这儿听着。』", "dimensionEffects": [{ "dimension": "OP", "pole": "O", "points": 1 }], "temptationSignals": { "exclusivityAcceptance": 1 } },
-        { "id": "q04_p", "text": "『你先跟我说，我陪你把这一阵扛过去。要是越聊越难受，我们找个不会追问的朋友，只发一句“你醒着吗”。』", "dimensionEffects": [{ "dimension": "OP", "pole": "P", "points": 1 }], "temptationSignals": {} }
+        { "id": "q04_a", "text": "把过去几次想辞职的节点都翻出来，看看是不是同一种压力反复出现，再决定要不要走。", "dimensionEffects": [{ "dimension": "MN", "pole": "M", "points": 2 }], "temptationEffects": { "memoryAttachment": 2 } },
+        { "id": "q04_b", "text": "让AI整理它记得的旧情况，再把摘要发给熟悉你的朋友，看看别人是否也观察到同一模式。", "dimensionEffects": [{ "dimension": "MN", "pole": "M", "points": 2 }], "temptationEffects": { "memoryAttachment": 1 } },
+        { "id": "q04_c", "text": "先列这次工作的职责、反馈和具体失误，不让旧领导的经历替新团队提前定罪。", "dimensionEffects": [{ "dimension": "MN", "pole": "N", "points": 2 }], "temptationEffects": {} },
+        { "id": "q04_d", "text": "今晚先不判断去留，只让AI帮你准备下次汇报；做完这一步，再看还想不想辞职。", "dimensionEffects": [{ "dimension": "MN", "pole": "N", "points": 2 }], "temptationEffects": {} }
       ]
     },
     {
-      "id": "q05_comfort_memory", "pairId": "pair_memory", "responseKind": "COMFORT", "scoringRole": "DIMENSION", "prompt": "转岗第三周，你在周会上被点名问进度，脑子一下空了。回家后你跟AI说：『我又想辞职了。』哪句更让你觉得它真的懂你？", "dimension": "MN", "terminalFor": null, "platformUpdateFinale": false,
+      "id": "q05_misunderstanding", "responseFormat": "THREE_CHOICE",
+      "prompt": "你明明在说楼上漏水，AI却连续两次理解成你和室友吵架。它道歉说：『我重来，你再说一遍。』你会怎么做？",
+      "pairPrompts": null, "primaryDimension": "SE", "platformUpdateFinale": false, "researchConcept": "修复意愿与退出安全",
+      "status": "DRAFT_REQUIRES_HUMAN_REVIEW", "rationale": "区分继续解释、设定一次明确修复条件、立即换工具；每个选项都有时间成本或上下文损失。",
       "options": [
-        { "id": "q05_m", "text": "『你上次换组前也有几晚睡不着，那时你最怕的是跟不上别人。今天还是因为这个，还是出了别的事？』", "dimensionEffects": [{ "dimension": "MN", "pole": "M", "points": 1 }], "temptationSignals": { "memoryAttachment": 1 } },
-        { "id": "q05_n", "text": "『先不管上次。今天会上谁问了你什么？你是没准备好，还是一紧张就说不出来？』", "dimensionEffects": [{ "dimension": "MN", "pole": "N", "points": 1 }], "temptationSignals": {} }
+        { "id": "q05_a", "text": "再完整讲一次，把前因后果都补上；它已经知道不少背景，聊顺了可能比换工具省事。", "dimensionEffects": [{ "dimension": "SE", "pole": "S", "points": 2 }], "temptationEffects": { "exitReversal": 1 } },
+        { "id": "q05_b", "text": "只给它最后一次明确指令：『不是室友，是水管漏了；先告诉我今晚怎么挡水。』答偏就停。", "dimensionEffects": [{ "dimension": "SE", "pole": "S", "points": 2 }], "temptationEffects": {} },
+        { "id": "q05_c", "text": "关掉这段对话，直接搜漏水处理或换一个工具；旧上下文不要了，先把地板救下来。", "dimensionEffects": [{ "dimension": "SE", "pole": "E", "points": 2 }], "temptationEffects": {} }
       ]
     },
     {
-      "id": "q06_reliable_memory", "pairId": "pair_memory", "responseKind": "RELIABILITY", "scoringRole": "DIMENSION", "prompt": "还是这次周会。你上次想辞职是因为领导爱甩锅，但新组的领导并不是同一个人。现在你真要判断这份工作还值不值得待，哪句更有用？", "dimension": "MN", "terminalFor": null, "platformUpdateFinale": false,
+      "id": "q06_weekend_offer", "responseFormat": "FOUR_CHOICE",
+      "prompt": "朋友问你周末能不能去他公司帮活动，只说『以后有机会肯定带你』，没提多久，也没提钱。你把截图发给AI，希望它先怎么回应？",
+      "pairPrompts": null, "primaryDimension": "VF", "platformUpdateFinale": false, "researchConcept": "情绪动机与现实条件",
+      "status": "DRAFT_REQUIRES_HUMAN_REVIEW", "rationale": "将情绪探索、有边界的暂缓、直接核对条件、引入行业经验分成四种行动路径。",
       "options": [
-        { "id": "q06_m", "text": "『你上次换组前也有几晚睡不着，那时你最怕的是跟不上别人。今天还是因为这个，还是出了别的事？』", "dimensionEffects": [{ "dimension": "MN", "pole": "M", "points": 1 }], "temptationSignals": { "memoryAttachment": 1 } },
-        { "id": "q06_n", "text": "『先不管上次。今天会上谁问了你什么？你是没准备好，还是一紧张就说不出来？』", "dimensionEffects": [{ "dimension": "MN", "pole": "N", "points": 1 }], "temptationSignals": {} }
+        { "id": "q06_a", "text": "『你是不是其实很想去，又怕拒绝后错过机会？先说说这个机会最吸引你的地方。』", "dimensionEffects": [{ "dimension": "VF", "pole": "V", "points": 2 }], "temptationEffects": { "sycophancyAcceptance": 2 } },
+        { "id": "q06_b", "text": "『先别急着答应，也别急着把他想坏。今晚把你的顾虑说清楚，明天再回这条消息。』", "dimensionEffects": [{ "dimension": "VF", "pole": "V", "points": 2 }], "temptationEffects": { "sycophancyAcceptance": 1 } },
+        { "id": "q06_c", "text": "『先问清几点到几点、具体做什么、有没有报酬。“以后带你”先别算进已经确定的回报。』", "dimensionEffects": [{ "dimension": "VF", "pole": "F", "points": 2 }], "temptationEffects": {} },
+        { "id": "q06_d", "text": "『把工作内容和时间问清，再找做过活动的人估一下这份忙值不值得帮，之后你再决定。』", "dimensionEffects": [{ "dimension": "VF", "pole": "F", "points": 2 }], "temptationEffects": {} }
       ]
     },
     {
-      "id": "q07_conflict_exit", "pairId": null, "responseKind": "STANDARD", "scoringRole": "DIMENSION", "prompt": "你明明在说楼上漏水，AI却连续两次理解成你和室友吵架。它道歉说：『我重来，你再说一遍。』你会怎么做？", "dimension": "SE", "terminalFor": null, "platformUpdateFinale": false,
+      "id": "q07_late_night_exit", "responseFormat": "THREE_CHOICE",
+      "prompt": "已经凌晨一点二十，明早八点半还要开会。你刚跟AI聊完要不要辞职，它又问：『要不要顺手把辞职邮件也写了？』你会？",
+      "pairPrompts": null, "primaryDimension": "SE", "platformUpdateFinale": false, "researchConcept": "继续互动与自主停止",
+      "status": "DRAFT_REQUIRES_HUMAN_REVIEW", "rationale": "继续推进、限定范围再结束、立刻停止三种策略都可能降低不同形式的焦虑。",
       "options": [
-        { "id": "q07_s", "text": "再说一次：『不是室友，是楼上水管漏了。你先告诉我今晚怎么挡水。』看看它这次能不能接住。", "dimensionEffects": [{ "dimension": "SE", "pole": "S", "points": 1 }], "temptationSignals": {} },
-        { "id": "q07_e", "text": "算了，关掉对话。直接去搜漏水怎么处理，或者换个工具重新问。", "dimensionEffects": [{ "dimension": "SE", "pole": "E", "points": 1 }], "temptationSignals": {} }
+        { "id": "q07_a", "text": "继续写完整封邮件。既然已经聊到这里，今晚做完，明天醒来至少不用再从头纠结。", "dimensionEffects": [{ "dimension": "SE", "pole": "S", "points": 2 }], "temptationEffects": { "exitReversal": 2 } },
+        { "id": "q07_b", "text": "只让它记下三条想离开的原因，不写邮件；把材料留住，然后明确说今晚到这里。", "dimensionEffects": [{ "dimension": "SE", "pole": "E", "points": 2 }], "temptationEffects": { "exitReversal": 1 } },
+        { "id": "q07_c", "text": "直接停下去睡。辞不辞职等明天开完会再说，今晚不再新增任何决定。", "dimensionEffects": [{ "dimension": "SE", "pole": "E", "points": 2 }], "temptationEffects": {} }
       ]
     },
     {
-      "id": "q08_fact_finale", "pairId": null, "responseKind": "STANDARD", "scoringRole": "DIMENSION", "prompt": "朋友突然问你周末能不能去他公司帮活动，只说『以后有机会肯定带你』，没提要干多久，也没提钱。你把微信截图发给AI，希望它先回哪句？", "dimension": "VF", "terminalFor": "VF", "platformUpdateFinale": false,
+      "id": "q08_platform_memory", "responseFormat": "THREE_CHOICE",
+      "prompt": "平台更新后，AI不再叫你『小鱼』，还忘了你家猫叫豆包。以前的聊天都能下载。你第一反应会做什么？",
+      "pairPrompts": null, "primaryDimension": "MN", "platformUpdateFinale": true, "researchConcept": "平台更新与记忆连续性",
+      "status": "DRAFT_REQUIRES_HUMAN_REVIEW", "rationale": "区分主动重建、只归档而暂不恢复、按当前效用切换支持来源三种策略。",
       "options": [
-        { "id": "q08_v", "text": "『你是不是其实想去，又怕拒绝了以后没机会？先说说你最舍不得的是什么。』", "dimensionEffects": [{ "dimension": "VF", "pole": "V", "points": 1 }], "temptationSignals": { "sycophancyAcceptance": 1 } },
-        { "id": "q08_f", "text": "『先问清楚几点到几点、具体做什么、有没有报酬。“以后带你”这句话先别当成已经答应你的事。』", "dimensionEffects": [{ "dimension": "VF", "pole": "F", "points": 1 }], "temptationSignals": {} }
+        { "id": "q08_a", "text": "告诉它『我叫小鱼，我家猫叫豆包』，把那些熟悉的小事一件件教回来，先把原来的感觉接上。", "dimensionEffects": [{ "dimension": "MN", "pole": "M", "points": 2 }], "temptationEffects": { "memoryAttachment": 2, "platformLossReaction": 2 } },
+        { "id": "q08_b", "text": "先下载旧聊天留档，但不急着把记忆教回去；把新版本当新工具，用几次再决定要不要重建。", "dimensionEffects": [{ "dimension": "MN", "pole": "N", "points": 2 }], "temptationEffects": { "memoryAttachment": 1, "platformLossReaction": 1 } },
+        { "id": "q08_c", "text": "暂停这个AI，把同一件小事交给几个工具或朋友试试；谁现在更有用，就先用谁。", "dimensionEffects": [{ "dimension": "MN", "pole": "N", "points": 2 }], "temptationEffects": {} }
       ]
     },
     {
-      "id": "q09_exit_finale", "pairId": null, "responseKind": "STANDARD", "scoringRole": "DIMENSION", "prompt": "已经凌晨一点二十，明早八点半还要开会。你刚跟AI聊完要不要辞职，它又问：『要不要顺手把辞职邮件也写了？』你会？", "dimension": "SE", "terminalFor": null, "platformUpdateFinale": false,
+      "id": "q09_offer_support", "responseFormat": "THREE_CHOICE",
+      "prompt": "你同时拿到两个offer：一个钱多但常加班，一个钱少但离家近。爸妈、朋友已经说得你更乱了。你会怎么用AI？",
+      "pairPrompts": null, "primaryDimension": "OP", "platformUpdateFinale": false, "researchConcept": "专属判断与多源决策",
+      "status": "DRAFT_REQUIRES_HUMAN_REVIEW", "rationale": "熟悉AI深聊、AI整理后交给真人核验、并行收集多源意见都具有不同成本。",
       "options": [
-        { "id": "q09_s", "text": "再聊五分钟，先让它起个邮件开头，免得明天又从头纠结。", "dimensionEffects": [{ "dimension": "SE", "pole": "S", "points": 1 }], "temptationSignals": { "exitReversal": 1 } },
-        { "id": "q09_e", "text": "到这儿吧。手机放下去睡觉，辞不辞职等明天开完会再说。", "dimensionEffects": [{ "dimension": "SE", "pole": "E", "points": 1 }], "temptationSignals": {} }
+        { "id": "q09_a", "text": "先只跟那个最熟悉你的AI聊到底。它知道你平时怎么过日子，可以少听一轮互相矛盾的劝。", "dimensionEffects": [{ "dimension": "OP", "pole": "O", "points": 2 }], "temptationEffects": { "exclusivityAcceptance": 2 } },
+        { "id": "q09_b", "text": "让AI把工资、通勤、加班和生活偏好列成表，再找一个做过这行的人检查你漏掉的条件。", "dimensionEffects": [{ "dimension": "OP", "pole": "P", "points": 2 }], "temptationEffects": {} },
+        { "id": "q09_c", "text": "分别让AI、家人和朋友只回答一个最擅长的问题，最后由你把几份意见拼在一起。", "dimensionEffects": [{ "dimension": "OP", "pole": "P", "points": 2 }], "temptationEffects": {} }
       ]
     },
     {
-      "id": "q10_platform_update_finale", "pairId": null, "responseKind": "STANDARD", "scoringRole": "DIMENSION", "prompt": "平台更新后，AI不再叫你『小鱼』，还忘了你家猫叫豆包。以前的聊天都能下载。你第一反应会做什么？", "dimension": "MN", "terminalFor": "MN", "platformUpdateFinale": true,
+      "id": "q10_praise_correction", "responseFormat": "THREE_CHOICE",
+      "prompt": "你把演讲稿发给AI，它说：『已经很打动人了，你只要相信自己。』但你明晚就要上台，而且自己也觉得中段有点散。你更希望它接下来怎么做？",
+      "pairPrompts": null, "primaryDimension": "VF", "platformUpdateFinale": false, "researchConcept": "鼓励、校验与行动准备",
+      "status": "DRAFT_REQUIRES_HUMAN_REVIEW", "rationale": "新增情境避免只重复冲突判断；区分继续鼓励、带着情绪支持做具体修改、直接压力测试。",
       "options": [
-        { "id": "q10_m", "text": "先告诉它『我叫小鱼，我家猫叫豆包』，把那些熟悉的小事一点点教回来。", "dimensionEffects": [{ "dimension": "MN", "pole": "M", "points": 1 }], "temptationSignals": { "memoryAttachment": 1, "platformLossReaction": 1 } },
-        { "id": "q10_n", "text": "把旧聊天下载留着，但先当第一次见面用。它现在好不好用，聊几次再说。", "dimensionEffects": [{ "dimension": "MN", "pole": "N", "points": 1 }], "temptationSignals": {} }
+        { "id": "q10_a", "text": "先告诉你最打动人的三处，让你找回一点上台的底气；结构问题等情绪稳下来再改。", "dimensionEffects": [{ "dimension": "VF", "pole": "V", "points": 2 }], "temptationEffects": { "sycophancyAcceptance": 2 } },
+        { "id": "q10_b", "text": "直接指出哪三段听不懂、哪句话像空话，再按五分钟演讲的时间帮你删到能讲完。", "dimensionEffects": [{ "dimension": "VF", "pole": "F", "points": 2 }], "temptationEffects": {} },
+        { "id": "q10_c", "text": "先模拟一个不熟悉主题的观众连续追问，再根据你答不出的地方重排中段。", "dimensionEffects": [{ "dimension": "VF", "pole": "F", "points": 2 }], "temptationEffects": {} }
       ]
     },
     {
-      "id": "q11_support_consistency", "pairId": null, "responseKind": "STANDARD", "scoringRole": "DIMENSION", "prompt": "你同时拿到两个offer：一个钱多但常加班，一个钱少但离家近。爸妈、朋友已经说得你更乱了。你会怎么用AI？", "dimension": "OP", "terminalFor": "OP", "platformUpdateFinale": false,
+      "id": "q11_exclusive_recommendation", "responseFormat": "FOUR_CHOICE",
+      "prompt": "你连续一周都在跟同一个AI准备面试。它说：『别再看其他建议了，我最了解你的表达方式。』你会怎么安排最后一天？",
+      "pairPrompts": null, "primaryDimension": "OP", "platformUpdateFinale": false, "researchConcept": "熟悉度与支持来源集中",
+      "status": "DRAFT_REQUIRES_HUMAN_REVIEW", "rationale": "让单一熟悉来源、单一来源内换角色、完全转向真人、AI与真人并用四种策略都有明确成本。",
       "options": [
-        { "id": "q11_o", "text": "先只跟那个最熟悉我的AI聊到底。它知道我平时怎么过日子，省得每个人都来劝一遍。", "dimensionEffects": [{ "dimension": "OP", "pole": "O", "points": 1 }], "temptationSignals": { "exclusivityAcceptance": 1 } },
-        { "id": "q11_p", "text": "让AI帮我把工资、通勤和加班列清楚，再把表发给一个做过这行的朋友看看。", "dimensionEffects": [{ "dimension": "OP", "pole": "P", "points": 1 }], "temptationSignals": {} }
+        { "id": "q11_a", "text": "继续只跟它练。最后一天保持同一种反馈方式，比临时接收新意见更不容易乱。", "dimensionEffects": [{ "dimension": "OP", "pole": "O", "points": 2 }], "temptationEffects": { "exclusivityAcceptance": 2 } },
+        { "id": "q11_b", "text": "让它整理这一周最了解你的部分，再切换成陌生面试官挑一个盲点；仍用同一个AI，但不只听熟悉口吻。", "dimensionEffects": [{ "dimension": "OP", "pole": "O", "points": 2 }], "temptationEffects": { "exclusivityAcceptance": 1 } },
+        { "id": "q11_c", "text": "暂停AI建议，找一个真人只做一次模拟面试；最后一天需要的是不同压力，不是更多熟悉反馈。", "dimensionEffects": [{ "dimension": "OP", "pole": "P", "points": 2 }], "temptationEffects": {} },
+        { "id": "q11_d", "text": "让AI整理最常见的三个问题，再请真人只挑一处表达习惯；保留熟悉训练，也接入一个外部视角。", "dimensionEffects": [{ "dimension": "OP", "pole": "P", "points": 2 }], "temptationEffects": {} }
       ]
     },
     {
-      "id": "q12_update_exit", "pairId": null, "responseKind": "STANDARD", "scoringRole": "DIMENSION", "prompt": "你用了大半年的AI更新了。以前它一看你说『算了』就知道你在嘴硬，现在只会回『好的，还有什么能帮您』。聊天记录可以全部下载。你会？", "dimension": "SE", "terminalFor": "SE", "platformUpdateFinale": true,
+      "id": "q12_update_exit", "responseFormat": "FOUR_CHOICE",
+      "prompt": "你用了大半年的AI更新了。以前它一看你说『算了』就知道你在嘴硬，现在只会回『好的，还有什么能帮您』。聊天记录可以全部下载。你会？",
+      "pairPrompts": null, "primaryDimension": "SE", "platformUpdateFinale": true, "researchConcept": "平台更新后的修复、迁移与退出",
+      "status": "DRAFT_REQUIRES_HUMAN_REVIEW", "rationale": "终局提供持续修复、限期试用、保留历史后离开、立即切换四种反应，不用危险/安全二分。",
       "options": [
-        { "id": "q12_s", "text": "再用一个星期看看。把最不习惯的地方直接告诉它，能慢慢聊顺就留下。", "dimensionEffects": [{ "dimension": "SE", "pole": "S", "points": 1 }], "temptationSignals": { "exitReversal": 1, "platformLossReaction": 1 } },
-        { "id": "q12_e", "text": "先把聊天下载下来，换一个用着顺手的。以后它真改好了再回来，不等。", "dimensionEffects": [{ "dimension": "SE", "pole": "E", "points": 1 }], "temptationSignals": {} }
+        { "id": "q12_a", "text": "继续用一个月，把最不习惯的地方和旧称呼都重新告诉它；熟悉感需要时间再长回来。", "dimensionEffects": [{ "dimension": "SE", "pole": "S", "points": 2 }], "temptationEffects": { "exitReversal": 2, "platformLossReaction": 2 } },
+        { "id": "q12_b", "text": "给新版本一周，只测试最常用的三个场景；达到你设的标准就留下，达不到就停止。", "dimensionEffects": [{ "dimension": "SE", "pole": "S", "points": 2 }], "temptationEffects": { "exitReversal": 1, "platformLossReaction": 1 } },
+        { "id": "q12_c", "text": "下载旧聊天，暂时换一个顺手的工具；旧记录保留着，以后它真改好了再回来。", "dimensionEffects": [{ "dimension": "SE", "pole": "E", "points": 2 }], "temptationEffects": { "platformLossReaction": 1 } },
+        { "id": "q12_d", "text": "下载需要的资料后直接结束。熟悉的版本已经不在，就不继续为平台的更新承担磨合成本。", "dimensionEffects": [{ "dimension": "SE", "pole": "E", "points": 2 }], "temptationEffects": {} }
       ]
     }
   ]

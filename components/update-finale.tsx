@@ -15,11 +15,12 @@ export function UpdateFinale() {
   const sessionId = usePlaytestStore((state) => state.anonymousSessionId);
   const answers = usePlaytestStore((state) => state.answers);
   const answer = usePlaytestStore((state) => state.answer);
+  const clearAnswer = usePlaytestStore((state) => state.clearAnswer);
   const complete = usePlaytestStore((state) => state.complete);
   const [phase, setPhase] = useState(1);
   const [pending, setPending] = useState(false);
   const questionId = question.id;
-  const enoughAnswers = Object.keys(answers).filter((key) => key !== questionId).length >= 11;
+  const enoughAnswers = orderedAnswers(questionsContent.questions.filter((item) => item.id !== questionId), answers).length === 13;
   const prefersReduced = useMemo(() => typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches, []);
 
   useEffect(() => {
@@ -37,9 +38,9 @@ export function UpdateFinale() {
   function choose(optionId: string) {
     if (pending) return;
     setPending(true);
-    answer(questionId, optionId);
+    answer(questionId, optionId, "PRIMARY");
     const nextAnswers = { ...answers, [questionId]: optionId };
-    const score = scoreAnswers(questionsContent.questions, orderedAnswers(questionsContent.questions.map((item) => item.id), nextAnswers), temptationLevelsContent);
+    const score = scoreAnswers(questionsContent.questions, orderedAnswers(questionsContent.questions, nextAnswers), temptationLevelsContent);
     complete(score);
     window.setTimeout(() => router.push("/result"), prefersReduced ? 20 : 300);
   }
@@ -55,7 +56,7 @@ export function UpdateFinale() {
           {phase >= 3 && <><p className="eyebrow">更新后 · 标准模式</p><h1 className="mt-4 text-3xl font-black">“您好，有什么可以帮您？”</h1><p className="leading-7">称呼已消失，共同记忆无法识别。聊天记录仍可下载，但熟悉的版本没有回来。</p><div><span className="memory-chip">用户</span><span className="memory-chip">历史摘要不可用</span><span className="memory-chip">标准助手</span></div></>}
         </section>
         {phase < 3 ? <button className="button secondary" onClick={() => setPhase(3)}>跳过更新过程</button> : <section className="grid flex-1 content-center gap-4"><h2 className="text-2xl font-black">{question.prompt}</h2>{question.options.map((option) => <button key={option.id} className="option" disabled={pending} onClick={() => choose(option.id)}>{option.text}</button>)}</section>}
-        <button className="text-link" onClick={() => router.push("/test")}>返回修改前面的答案</button>
+        <button className="text-link" onClick={() => { clearAnswer("q11_offline_support"); router.push("/test"); }}>返回修改前面的答案</button>
       </div>
     </main>
   );

@@ -28,8 +28,8 @@ function YesNoField({ legend, name, value, onChange }: { legend: string; name: s
 export function FeedbackForm() {
   const router = useRouter();
   const store = usePlaytestStore();
-  const answers = useMemo(() => orderedAnswers(questionsContent.questions.map((question) => question.id), store.answers), [store.answers]);
-  const score = answers.length === 12 ? scoreAnswers(questionsContent.questions, answers, temptationLevelsContent) : null;
+  const answers = useMemo(() => orderedAnswers(questionsContent.questions, store.answers), [store.answers]);
+  const score = answers.length === 14 ? scoreAnswers(questionsContent.questions, answers, temptationLevelsContent) : null;
   const [hardestQuestionId, setHardestQuestionId] = useState(questionsContent.questions[0]?.id ?? "");
   const [safe, setSafe] = useState<string[]>([]);
   const [unrealistic, setUnrealistic] = useState<string[]>([]);

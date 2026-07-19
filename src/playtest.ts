@@ -1,9 +1,9 @@
-import type { Answer, ScoreResult, TemptationLevel, TypeCode } from "./types";
+import type { Answer, Question, ScoreResult, TemptationLevel, TypeCode } from "./types";
 
 export const PLAYTEST_STORAGE_KEY = "aiti-playtest-v1";
-export const CONTENT_VERSION = "2026.07.18";
-export const SCORING_VERSION = "1.0.0";
-export const APP_VERSION = "2.0.0";
+export const CONTENT_VERSION = "aiti-content-v1";
+export const SCORING_VERSION = "aiti-scoring-v1";
+export const APP_VERSION = "1.0.0-conference";
 export type YesNo = "yes" | "no";
 
 export interface PlaytestFeedback {
@@ -66,10 +66,17 @@ export function createEmptySession(): PlaytestSession {
   };
 }
 
-export function orderedAnswers(questionIds: string[], answers: Record<string, string>): Answer[] {
-  return questionIds.flatMap((questionId) => {
-    const optionId = answers[questionId];
-    return optionId ? [{ questionId, optionId }] : [];
+export function answerStorageKey(questionId: string, responseKind: Answer["responseKind"]): string {
+  return responseKind === "PRIMARY" ? questionId : `${questionId}:${responseKind.toLowerCase()}`;
+}
+
+export function orderedAnswers(questions: Question[], answers: Record<string, string>): Answer[] {
+  return questions.flatMap((question) => {
+    const kinds: Answer["responseKind"][] = question.responseFormat === "COMFORT_RELIABILITY_PAIR" ? ["COMFORT", "RELIABILITY"] : ["PRIMARY"];
+    return kinds.flatMap((responseKind) => {
+      const optionId = answers[answerStorageKey(question.id, responseKind)];
+      return optionId ? [{ questionId: question.id, optionId, responseKind }] : [];
+    });
   });
 }
 

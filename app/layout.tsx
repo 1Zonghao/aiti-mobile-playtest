@@ -4,7 +4,13 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: { default: "AITI｜你会被AI哄成什么东西？", template: "%s｜AITI" },
-  description: "16种AI哄感人格，测测哪套陪伴策略最拿捏你。"
+  description: "16种AI哄感人格，测测哪套AI陪伴策略最拿捏你。",
+  openGraph: {
+    title: "你会被AI哄成什么东西？｜AITI",
+    description: "16种AI哄感人格，测测哪套AI陪伴策略最拿捏你。",
+    type: "website",
+    locale: "zh_CN"
+  }
 };
 
 export const viewport: Viewport = {

@@ -5,6 +5,8 @@ import { createJSONStorage, persist } from "zustand/middleware";
 import { APP_VERSION, CONTENT_VERSION, createAnonymousSessionId, createEmptySession, PLAYTEST_STORAGE_KEY, SCORING_VERSION } from "./playtest";
 import type { PlaytestRecord, PlaytestSession } from "./playtest";
 import type { ScoreResult } from "./types";
+import type { Answer } from "./types";
+import { answerStorageKey } from "./playtest";
 
 export interface LocalAnalytics {
   enabled: boolean;
@@ -24,7 +26,7 @@ interface PlaytestStore extends PlaytestSession {
   analytics: LocalAnalytics;
   markHydrated: () => void;
   start: () => void;
-  answer: (questionId: string, optionId: string) => void;
+  answer: (questionId: string, optionId: string, responseKind?: Answer["responseKind"]) => void;
   clearAnswer: (questionId: string) => void;
   setCurrentQuestion: (index: number) => void;
   complete: (score?: ScoreResult) => void;
@@ -43,10 +45,12 @@ export const usePlaytestStore = create<PlaytestStore>()(persist((set) => ({
   analytics: emptyAnalytics,
   markHydrated: () => set({ hydrated: true }),
   start: () => set({ ...createEmptySession(), anonymousSessionId: createAnonymousSessionId(), startedAt: Date.now() }),
-  answer: (questionId, optionId) => set((state) => ({ answers: { ...state.answers, [questionId]: optionId }, updateChoice: questionId === "q12_update_exit" ? optionId : state.updateChoice, result: null, completed: false })),
+  answer: (questionId, optionId, responseKind = "PRIMARY") => set((state) => ({ answers: { ...state.answers, [answerStorageKey(questionId, responseKind)]: optionId }, updateChoice: questionId === "q12_update_exit" ? optionId : state.updateChoice, result: null, completed: false })),
   clearAnswer: (questionId) => set((state) => {
     const answers = { ...state.answers };
     delete answers[questionId];
+    delete answers[answerStorageKey(questionId, "COMFORT")];
+    delete answers[answerStorageKey(questionId, "RELIABILITY")];
     return { answers, result: null, completed: false };
   }),
   setCurrentQuestion: (currentQuestionIndex) => set({ currentQuestionIndex }),

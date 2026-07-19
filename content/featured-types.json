@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "contentVersion": "2026.07.18",
+  "contentVersion": "aiti-content-v1",
   "featuredCodes": ["VOMS", "VOME", "VONS", "VPNS", "FOMS", "FONE", "FPMS", "FPME"],
   "cards": [
     { "code": "VOMS", "shortCopy": "AI也得守关系边界。", "resultTitle": "你不是用户，你是来查岗的。", "atFriendCopy": "@那个会对AI吃醋的人，你的电子户口本到了。" },

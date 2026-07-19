@@ -6,7 +6,10 @@ export interface CharacterAsset {
   official: boolean;
 }
 
-const officialCodes = new Set<TypeCode>([]);
+const officialCodes = new Set<TypeCode>([
+  "VOMS", "VOME", "VONS", "VONE", "VPMS", "VPME", "VPNS", "VPNE",
+  "FOMS", "FOME", "FONS", "FONE", "FPMS", "FPME", "FPNS", "FPNE"
+]);
 
 export const characterAssets = Object.fromEntries(
   ["VOMS", "VOME", "VONS", "VONE", "VPMS", "VPME", "VPNS", "VPNE", "FOMS", "FOME", "FONS", "FONE", "FPMS", "FPME", "FPNS", "FPNE"].map((code) => [

@@ -5,7 +5,7 @@
 全部内容文档包含：
 
 - `schemaVersion`: 语义化 Schema 版本，当前为 `1.0.0`。
-- `contentVersion`: 内容快照日期，当前为 `2026.07.18`。
+- `contentVersion`: 正式内容快照标识，当前为 `aiti-content-v1`。
 
 Schema 变化时更新 `schemaVersion`；只修改内容时更新 `contentVersion`。
 

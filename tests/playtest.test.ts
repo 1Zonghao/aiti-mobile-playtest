@@ -2,24 +2,35 @@ import { readFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 import { questionsContent, resultTypesContent, temptationLevelsContent } from "../src/content.js";
-import { completionTimeSeconds, createEmptySession, createPlaytestRecord, isDebugEnabled, orderedAnswers, recordsToCsv } from "../src/playtest.js";
+import { answerStorageKey, completionTimeSeconds, createEmptySession, createPlaytestRecord, isDebugEnabled, orderedAnswers, recordsToCsv } from "../src/playtest.js";
 import type { PlaytestFeedback } from "../src/playtest.js";
 import { scoreAnswers } from "../src/scoring.js";
 
 function firstOptionAnswers(): Record<string, string> {
-  return Object.fromEntries(questionsContent.questions.map((question) => [question.id, question.options[0].id]));
+  const answers: Record<string, string> = {};
+  for (const question of questionsContent.questions) {
+    const optionId = question.options[0]?.id;
+    if (!optionId) continue;
+    if (question.responseFormat === "COMFORT_RELIABILITY_PAIR") {
+      answers[answerStorageKey(question.id, "COMFORT")] = optionId;
+      answers[answerStorageKey(question.id, "RELIABILITY")] = optionId;
+    } else answers[question.id] = optionId;
+  }
+  return answers;
 }
 
 describe("Phase 1.5C 试玩流程核心", () => {
   it("12 题完整流程可以评分，并在修改旧答案后重新评分", () => {
     const map = firstOptionAnswers();
-    const ids = questionsContent.questions.map((question) => question.id);
-    const first = scoreAnswers(questionsContent.questions, orderedAnswers(ids, map), temptationLevelsContent);
+    const first = scoreAnswers(questionsContent.questions, orderedAnswers(questionsContent.questions, map), temptationLevelsContent);
     const question = questionsContent.questions[0];
     if (!question) throw new Error("题库为空。");
-    map[question.id] = question.options[1].id;
-    const changed = scoreAnswers(questionsContent.questions, orderedAnswers(ids, map), temptationLevelsContent);
-    expect(first.answerTrace).toHaveLength(12);
+    const firstPole = question.options[0]?.dimensionEffects.find((effect) => effect.dimension === question.primaryDimension)?.pole;
+    const replacement = question.options.find((option) => option.dimensionEffects.some((effect) => effect.dimension === question.primaryDimension && effect.pole !== firstPole))?.id;
+    if (!replacement) throw new Error("首题缺少第二选项。");
+    map[answerStorageKey(question.id, "COMFORT")] = replacement;
+    const changed = scoreAnswers(questionsContent.questions, orderedAnswers(questionsContent.questions, map), temptationLevelsContent);
+    expect(first.answerTrace).toHaveLength(14);
     expect(changed.dimensionScores).not.toEqual(first.dimensionScores);
   });
 
@@ -44,7 +55,7 @@ describe("Phase 1.5C 试玩流程核心", () => {
   });
 
   it("反馈记录仅使用匿名会话字段，并可导出合法 CSV", () => {
-    const answers = orderedAnswers(questionsContent.questions.map((question) => question.id), firstOptionAnswers());
+    const answers = orderedAnswers(questionsContent.questions, firstOptionAnswers());
     const score = scoreAnswers(questionsContent.questions, answers, temptationLevelsContent);
     const feedback: PlaytestFeedback = {
       completionTimeSeconds: 90,
