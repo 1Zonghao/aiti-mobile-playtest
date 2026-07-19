@@ -13,10 +13,14 @@
     "test": "vitest run",
     "test:e2e": "playwright test",
     "validate:content": "tsx scripts/validate-content.ts",
-    "analyze:human-review": "tsx scripts/analyze-human-review.ts"
+    "analyze:human-review": "tsx scripts/analyze-human-review.ts",
+    "analyze:multi-option": "tsx scripts/analyze-multi-option.ts",
+    "assets:characters": "tsx scripts/convert-characters.ts"
   },
   "dependencies": {
+    "html-to-image": "^1.11.13",
     "next": "^16.2.10",
+    "qrcode.react": "^4.2.0",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
     "zod": "^4.0.0",
@@ -35,6 +39,7 @@
     "eslint": "^9.0.0",
     "postcss": "^8.5.19",
     "react-server-dom-webpack": "^19.2.7",
+    "sharp": "^0.35.3",
     "tailwindcss": "^4.3.3",
     "tsx": "^4.0.0",
     "typescript": "^5.9.0",

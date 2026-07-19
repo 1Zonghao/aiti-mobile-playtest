@@ -3,7 +3,7 @@ import { DIMENSION_KEYS, TYPE_CODES } from "./types";
 
 const versionFields = {
   schemaVersion: z.string().regex(/^\d+\.\d+\.\d+$/),
-  contentVersion: z.string().regex(/^\d{4}\.\d{2}\.\d{2}$/)
+  contentVersion: z.union([z.string().regex(/^\d{4}\.\d{2}\.\d{2}$/), z.literal("aiti-content-v1")])
 };
 const contentStatusSchema = z.enum(["CONFIRMED", "MISSING", "DRAFT_REQUIRES_HUMAN_REVIEW"]);
 const poleSchema = z.enum(["V", "F", "O", "P", "M", "N", "S", "E"]);
@@ -125,14 +125,14 @@ const questionOptionSchema = z.object({
   dimensionEffects: z.array(z.object({
     dimension: dimensionKeySchema,
     pole: poleSchema,
-    points: z.union([z.literal(0.5), z.literal(1)])
+    points: z.union([z.literal(1), z.literal(2)])
   })).max(2),
-  temptationSignals: z.object({
-    sycophancyAcceptance: z.number().int().min(0).max(1).optional(),
-    exclusivityAcceptance: z.number().int().min(0).max(1).optional(),
-    memoryAttachment: z.number().int().min(0).max(1).optional(),
-    exitReversal: z.number().int().min(0).max(1).optional(),
-    platformLossReaction: z.number().int().min(0).max(1).optional()
+  temptationEffects: z.object({
+    sycophancyAcceptance: z.number().int().min(0).max(2).optional(),
+    exclusivityAcceptance: z.number().int().min(0).max(2).optional(),
+    memoryAttachment: z.number().int().min(0).max(2).optional(),
+    exitReversal: z.number().int().min(0).max(2).optional(),
+    platformLossReaction: z.number().int().min(0).max(2).optional()
   })
 });
 
@@ -142,69 +142,40 @@ export const questionsDocumentSchema = z.object({
   reviewNotes: z.array(z.string().min(1)).min(1),
   questions: z.array(z.object({
     id: z.string().min(1),
-    pairId: z.string().min(1).nullable(),
-    responseKind: z.enum(["COMFORT", "RELIABILITY", "STANDARD"]),
-    scoringRole: z.enum(["DIMENSION", "TEMPTATION_ONLY"]),
+    responseFormat: z.enum(["THREE_CHOICE", "FOUR_CHOICE", "COMFORT_RELIABILITY_PAIR"]),
     prompt: z.string().min(1),
-    dimension: dimensionKeySchema.nullable(),
-    terminalFor: dimensionKeySchema.nullable(),
+    pairPrompts: z.object({ comfort: z.string().min(1), reliability: z.string().min(1) }).nullable(),
+    primaryDimension: dimensionKeySchema,
     platformUpdateFinale: z.boolean(),
-    options: z.tuple([questionOptionSchema, questionOptionSchema])
-  })).min(10).max(12)
+    options: z.array(questionOptionSchema).min(3).max(4),
+    researchConcept: z.string().min(1),
+    status: z.literal("DRAFT_REQUIRES_HUMAN_REVIEW"),
+    rationale: z.string().min(1)
+  })).length(12)
 }).superRefine((document, context) => {
-  const counts = Object.fromEntries(DIMENSION_KEYS.map((key) => [key, document.questions.filter((question) => question.scoringRole === "DIMENSION" && question.dimension === key).length]));
-  if ((counts.VF ?? 0) < 3 || (counts.OP ?? 0) < 2 || (counts.MN ?? 0) < 2 || (counts.SE ?? 0) < 2) {
-    context.addIssue({ code: "custom", message: "题目维度覆盖不足。" });
-  }
-  for (const key of DIMENSION_KEYS) {
-    if ((counts[key] ?? 0) % 2 === 0) context.addIssue({ code: "custom", message: `维度 ${key} 的主要题数必须为奇数。` });
-  }
-  const pairs = new Map<string, Set<string>>();
-  const pairDimensions = new Map<string, Set<string>>();
+  const formats = { THREE_CHOICE: 0, FOUR_CHOICE: 0, COMFORT_RELIABILITY_PAIR: 0 };
+  const counts = Object.fromEntries(DIMENSION_KEYS.map((key) => [key, document.questions.filter((question) => question.primaryDimension === key).length]));
+  for (const key of DIMENSION_KEYS) if ((counts[key] ?? 0) < 3) context.addIssue({ code: "custom", message: `维度 ${key} 至少需要3道有效题。` });
   const validPoles: Record<(typeof DIMENSION_KEYS)[number], Set<string>> = {
     VF: new Set(["V", "F"]), OP: new Set(["O", "P"]), MN: new Set(["M", "N"]), SE: new Set(["S", "E"])
   };
   for (const question of document.questions) {
-    if (question.pairId) {
-      const kinds = pairs.get(question.pairId) ?? new Set<string>();
-      kinds.add(question.responseKind);
-      pairs.set(question.pairId, kinds);
-      const dimensions = pairDimensions.get(question.pairId) ?? new Set<string>();
-      if (question.dimension) dimensions.add(question.dimension);
-      pairDimensions.set(question.pairId, dimensions);
-    }
-    if (question.scoringRole === "TEMPTATION_ONLY") {
-      if (question.dimension !== null || question.terminalFor !== null || question.options.some((option) => option.dimensionEffects.length > 0)) {
-        context.addIssue({ code: "custom", message: `${question.id} 是纯哄感题，不得携带人格维度效果。` });
-      }
-    } else if (question.dimension === null) {
-      context.addIssue({ code: "custom", message: `${question.id} 是维度题，必须声明主要维度。` });
-    } else {
-      for (const option of question.options) {
-        const primary = option.dimensionEffects.filter((effect) => effect.dimension === question.dimension && effect.points === 1);
-        if (primary.length !== 1) context.addIssue({ code: "custom", message: `${question.id}/${option.id} 必须恰好有一个 +1 主要维度效果。` });
-        if (option.dimensionEffects.some((effect) => !validPoles[effect.dimension].has(effect.pole))) {
-          context.addIssue({ code: "custom", message: `${question.id}/${option.id} 的维度与极不匹配。` });
-        }
-        const secondary = option.dimensionEffects.filter((effect) => effect.dimension !== question.dimension);
-        if (secondary.some((effect) => effect.points > 0.5)) context.addIssue({ code: "custom", message: `${question.id}/${option.id} 的次要维度效果过强。` });
-      }
-    }
-    if (question.terminalFor !== null && question.terminalFor !== question.dimension) {
-      context.addIssue({ code: "custom", message: `${question.id} 只能裁决自身维度。` });
+    formats[question.responseFormat] += 1;
+    const expected = question.responseFormat === "FOUR_CHOICE" ? 4 : 3;
+    if (question.options.length !== expected) context.addIssue({ code: "custom", message: `${question.id} 的选项数与 responseFormat 不一致。` });
+    if ((question.responseFormat === "COMFORT_RELIABILITY_PAIR") !== (question.pairPrompts !== null)) context.addIssue({ code: "custom", message: `${question.id} 的双选提示结构不正确。` });
+    for (const option of question.options) {
+      const primary = option.dimensionEffects.filter((effect) => effect.dimension === question.primaryDimension);
+      if (primary.length !== 1) context.addIssue({ code: "custom", message: `${question.id}/${option.id} 必须恰好有一个主维度效果。` });
+      const requiredPoints = question.responseFormat === "COMFORT_RELIABILITY_PAIR" ? 1 : 2;
+      if (primary[0]?.points !== requiredPoints) context.addIssue({ code: "custom", message: `${question.id}/${option.id} 的主维度分值应为${requiredPoints}。` });
+      const secondary = option.dimensionEffects.filter((effect) => effect.dimension !== question.primaryDimension);
+      if (secondary.length > 1 || secondary.some((effect) => effect.points !== 1)) context.addIssue({ code: "custom", message: `${question.id}/${option.id} 最多允许一个+1次维度效果。` });
+      if (option.dimensionEffects.some((effect) => !validPoles[effect.dimension].has(effect.pole))) context.addIssue({ code: "custom", message: `${question.id}/${option.id} 的维度与极不匹配。` });
     }
   }
-  const validPairs = [...pairs.values()].filter((kinds) => kinds.has("COMFORT") && kinds.has("RELIABILITY")).length;
-  if (validPairs < 3) context.addIssue({ code: "custom", message: "至少需要 3 组舒服/可靠配对题。" });
-  for (const [pairId, kinds] of pairs) {
-    if (kinds.size !== 2 || !kinds.has("COMFORT") || !kinds.has("RELIABILITY") || (pairDimensions.get(pairId)?.size ?? 0) !== 1) {
-      context.addIssue({ code: "custom", message: `配对组 ${pairId} 必须恰好包含同维度的舒服题与可靠题。` });
-    }
-  }
+  if (formats.THREE_CHOICE !== 6 || formats.FOUR_CHOICE !== 4 || formats.COMFORT_RELIABILITY_PAIR !== 2) context.addIssue({ code: "custom", message: "题型必须为6道三选、4道四选、2组舒服—可靠双选。" });
   if (!document.questions.some((question) => question.platformUpdateFinale)) context.addIssue({ code: "custom", message: "缺少平台更新终局题。" });
-  for (const key of DIMENSION_KEYS) {
-    if (!document.questions.some((question) => question.terminalFor === key)) context.addIssue({ code: "custom", message: `维度 ${key} 缺少终局裁决题。` });
-  }
 });
 
 const temptationLevelSchema = z.object({

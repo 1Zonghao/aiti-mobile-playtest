@@ -1,4 +1,7 @@
+"use client";
+
 import Image from "next/image";
+import { useState } from "react";
 import { getCharacterAsset } from "../src/lib/character-assets";
 import type { ResultType, TypeCode } from "../src/types";
 
@@ -14,10 +17,11 @@ export function getPalette(result: ResultType): string[] {
 export function CharacterVisual({ result, priority = false, compact = false }: { result: ResultType; priority?: boolean; compact?: boolean }) {
   const asset = getCharacterAsset(result.code as TypeCode);
   const palette = getPalette(result);
-  if (asset.official) {
+  const [failed, setFailed] = useState(false);
+  if (asset.official && !failed) {
     return (
       <div className="character-frame" data-compact={compact}>
-        <Image src={asset.src} alt={result.name} fill priority={priority} sizes={compact ? "(max-width: 720px) 45vw, 260px" : "(max-width: 720px) 90vw, 520px"} className="object-contain" />
+        <Image src={asset.src} alt={result.name} fill priority={priority} sizes={compact ? "(max-width: 720px) 45vw, 260px" : "(max-width: 720px) 90vw, 520px"} className="object-contain" onError={() => setFailed(true)} />
       </div>
     );
   }

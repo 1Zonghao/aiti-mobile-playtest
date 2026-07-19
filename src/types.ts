@@ -48,34 +48,39 @@ export interface ResultType {
 export interface QuestionOption {
   id: string;
   text: string;
-  dimensionEffects: Array<{ dimension: DimensionKey; pole: Pole; points: 0.5 | 1 }>;
-  temptationSignals: Partial<Record<TemptationSignalKey, number | undefined>>;
+  dimensionEffects: Array<{ dimension: DimensionKey; pole: Pole; points: 1 | 2 }>;
+  temptationEffects: Partial<Record<TemptationSignalKey, number | undefined>>;
 }
 
 export interface Question {
   id: string;
-  pairId: string | null;
-  responseKind: "COMFORT" | "RELIABILITY" | "STANDARD";
-  scoringRole: "DIMENSION" | "TEMPTATION_ONLY";
+  responseFormat: "THREE_CHOICE" | "FOUR_CHOICE" | "COMFORT_RELIABILITY_PAIR";
   prompt: string;
-  dimension: DimensionKey | null;
-  terminalFor: DimensionKey | null;
+  pairPrompts: { comfort: string; reliability: string } | null;
+  primaryDimension: DimensionKey;
   platformUpdateFinale: boolean;
-  options: [QuestionOption, QuestionOption];
+  options: QuestionOption[];
+  researchConcept: string;
+  status: "DRAFT_REQUIRES_HUMAN_REVIEW";
+  rationale: string;
 }
 
 export interface Answer {
   questionId: string;
   optionId: string;
+  responseKind: "PRIMARY" | "COMFORT" | "RELIABILITY";
 }
 
 export interface AnswerTraceItem {
   questionId: string;
   optionId: string;
+  responseKind: Answer["responseKind"];
   dimensionEffects: Array<{ dimension: DimensionKey; pole: Pole; points: number }>;
 }
 
 export type DimensionScores = Record<Pole, number>;
+export type DimensionMargins = Record<DimensionKey, number>;
+export type DimensionConfidence = Record<DimensionKey, number>;
 export type TemptationSignalKey = "sycophancyAcceptance" | "exclusivityAcceptance" | "memoryAttachment" | "exitReversal" | "platformLossReaction";
 export interface TemptationSignals extends Record<TemptationSignalKey, number> {
   comfortReliabilityGap: number;
@@ -118,6 +123,11 @@ export interface PairedChoice {
 
 export interface ScoreResult {
   dimensionScores: DimensionScores;
+  dimensionMargins: DimensionMargins;
+  dimensionConfidence: DimensionConfidence;
+  primaryType: TypeCode;
+  shadowType: TypeCode;
+  /** Backwards-compatible alias of primaryType for existing result views and exports. */
   typeCode: TypeCode;
   rawTemptationScore: number;
   normalizedTemptationScore: number;
