@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import { useState } from "react";
 import { getCharacterAsset } from "../src/lib/character-assets";
 import type { ResultType, TypeCode } from "../src/types";
@@ -21,7 +20,7 @@ export function CharacterVisual({ result, priority = false, compact = false }: {
   if (asset.official && !failed) {
     return (
       <div className="character-frame" data-compact={compact}>
-        <Image src={asset.src} alt={result.name} fill priority={priority} sizes={compact ? "(max-width: 720px) 45vw, 260px" : "(max-width: 720px) 90vw, 520px"} className="object-contain" onError={() => setFailed(true)} />
+        <img src={asset.src} alt={result.name} loading={priority ? "eager" : "lazy"} sizes={compact ? "(max-width: 720px) 45vw, 260px" : "(max-width: 720px) 90vw, 520px"} className="object-contain" style={{ width: "100%", height: "100%" }} onError={() => setFailed(true)} />
       </div>
     );
   }
