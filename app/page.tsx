@@ -1,21 +1,30 @@
+import Link from "next/link";
+import { CharacterVisual } from "../components/character-visual";
+import { SiteHeader } from "../components/site-header";
 import { StartButton } from "../components/start-button";
-import { disclaimersContent, siteCopyContent } from "../src/content";
+import { resultTypeByCode, siteCopyContent } from "../src/content";
 
 export default function HomePage() {
+  const voms = resultTypeByCode.get("VOMS");
+  const fone = resultTypeByCode.get("FONE");
+  if (!voms || !fone) throw new Error("首页角色内容不完整。");
   return (
-    <main className="screen justify-between gap-8">
-      <section className="pt-8">
-        <p className="label mb-4">AITI / LOW-FI PLAYTEST</p>
-        <h1 className="m-0 max-w-[10ch] text-[46px] font-black leading-[1.02] tracking-[-.05em]">{siteCopyContent.campaignTitle}</h1>
-        <p className="mt-6 text-lg leading-8">{siteCopyContent.hook}</p>
-        <div className="panel mt-8 p-4">
-          <p className="m-0 font-bold">预计用时 60—120 秒</p>
-          <p className="mb-0 mt-2 text-[var(--muted)]">12 道二选一题，不登录、不上传数据。</p>
+    <main className="page-shell">
+      <SiteHeader />
+      <section className="hero">
+        <div className="hero-copy">
+          <p className="eyebrow">AI Intimacy Temptation Indicator</p>
+          <h1 className="display-title">{siteCopyContent.campaignTitle}</h1>
+          <p className="hero-subtitle">{siteCopyContent.coverSubtitle}</p>
+          <div className="hero-actions"><StartButton /><Link className="button secondary" href="/demo">大会演示模式</Link></div>
+          <p className="mt-4 font-bold">约60—90秒 · 12个AI互动场景</p>
+          <ul className="quick-tags" aria-label="测试说明"><li>不登录</li><li>不读取聊天记录</li><li>不是心理诊断</li></ul>
+          <div className="mt-6 flex flex-wrap gap-5 text-sm font-bold"><Link href="/types">浏览16型 →</Link><Link href="/research">这研究到底在研究什么 →</Link></div>
         </div>
-      </section>
-      <section className="space-y-4">
-        <StartButton />
-        <p className="m-0 text-sm leading-6 text-[var(--muted)]">{disclaimersContent.unifiedDisclaimer}</p>
+        <div className="hero-visual" aria-label="赛博正宫与拔线仙人对撞主视觉">
+          <p className="label mb-3 text-center">EXCLUSIVE MODE × EXIT READY</p>
+          <div className="hero-duel"><CharacterVisual result={voms} compact priority /><CharacterVisual result={fone} compact priority /></div>
+        </div>
       </section>
     </main>
   );

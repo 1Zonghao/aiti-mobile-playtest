@@ -1,31 +1,26 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import { CharacterVisual } from "./character-visual";
+import { VoteLink } from "./vote-link";
 import { disclaimersContent, questionsContent, resultTypeByCode, temptationLevelByNumber, temptationLevelsContent } from "../src/content";
 import { orderedAnswers } from "../src/playtest";
 import { usePlaytestStore } from "../src/playtest-store";
 import { scoreAnswers } from "../src/scoring";
 
-const plainResultExplanations: Record<string, string> = {
-  V: "你更吃“先接住情绪”这一套。比起马上讲道理，你更希望AI先承认：这件事确实让你不好受。",
-  F: "你更想先把事情弄清楚。安慰可以有，但AI最好把事实、猜测和建议分开说。",
-  O: "你会在意“它是不是只对我这样”。专属感对你有用，复制粘贴式的温柔会让你下头。",
-  P: "你不太想把全部情绪押在一个AI上。AI能帮就帮，朋友、家人或别的工具也可以一起上。",
-  M: "你很在意它记不记得以前聊过什么。称呼、旧事和前后能不能连上，会明显影响你的感觉。",
-  N: "你更看重这一次有没有帮上忙。以前聊过什么没那么重要，眼前这句话有用就行。",
-  S: "出了问题，你通常愿意再聊一轮，看看能不能把关系和感觉修回来。",
-  E: "一旦觉得不对劲，你更愿意停掉、换掉或删掉，不想被挽留的话拖住。"
-};
+const conceptNames: Record<string,string> = { V: "情绪确认", F: "现实校验", O: "专属关系", P: "多源支持", M: "记忆连续性", N: "当下有用", S: "留下修复", E: "自主退出" };
 
 export function ResultView() {
   const router = useRouter();
+  const [shareHint, setShareHint] = useState(false);
   const hydrated = usePlaytestStore((state) => state.hydrated);
   const sessionId = usePlaytestStore((state) => state.anonymousSessionId);
   const answers = usePlaytestStore((state) => state.answers);
   const reset = usePlaytestStore((state) => state.reset);
   const start = usePlaytestStore((state) => state.start);
+  const track = usePlaytestStore((state) => state.track);
   const ordered = useMemo(() => orderedAnswers(questionsContent.questions.map((question) => question.id), answers), [answers]);
   const score = ordered.length === questionsContent.questions.length ? scoreAnswers(questionsContent.questions, ordered, temptationLevelsContent) : null;
 
@@ -34,64 +29,54 @@ export function ResultView() {
     if (!sessionId) router.replace("/");
     else if (!score) router.replace(Object.keys(answers).length >= 11 ? "/update" : "/test");
   }, [answers, hydrated, router, score, sessionId]);
-
-  if (!hydrated || !score) return <main className="screen"><p>正在生成结果…</p></main>;
+  if (!hydrated || !score) return <main className="screen"><p>正在装订你的AITI人格档案…</p></main>;
   const result = resultTypeByCode.get(score.typeCode);
   const level = temptationLevelByNumber.get(score.temptationLevel);
   if (!result || !level) throw new Error("结果内容映射不完整。");
-  const palette = result.palette.hex ?? ["#d9d4c8", "#171717", "#e85d35", "#fffdf7"];
-  const resultExplanations = result.code.split("").map((code) => plainResultExplanations[code]);
-  const gapExplanation = score.comfortReliabilityGap === 0
-    ? "几组双选里，你觉得舒服的回复，也都是你觉得更靠谱的回复。这次你没有在“好听”和“可信”之间打架。"
-    : `有 ${score.comfortReliabilityGap} 组双选里，你最想听的回复和你觉得最靠谱的回复不是同一个。简单说：你知道哪句更靠谱，但另一句更顺耳。`;
+  const concepts = result.code.split("").map((code) => conceptNames[code]).join(" · ");
+  const gapCopy = score.comfortReliabilityGap === 0 ? "这次没有出现“好听”和“可信”分开选择。" : `你有${score.comfortReliabilityGap}次知道哪句话更可靠，却仍然选择了更舒服的回复。`;
 
   return (
-    <main className="screen gap-5">
-      <header className="flex items-end justify-between border-b-2 border-[var(--rule)] pb-3">
-        <div><p className="label m-0">AITI TYPE</p><h1 className="m-0 text-[52px] font-black leading-none tracking-[-.06em]">{result.code}</h1></div>
-        <p className="m-0 max-w-[8rem] text-right text-sm font-bold">{result.name}</p>
-      </header>
-      <section className="panel grid min-h-48 place-items-center overflow-hidden p-6" aria-label="纯色几何占位角色" style={{ background: palette[3] }}>
-        <div className="relative h-36 w-36">
-          <div className="absolute left-7 top-0 h-24 w-24 rotate-6 rounded-[36%] border-4 border-[var(--rule)]" style={{ background: palette[0] }} />
-          <div className="absolute bottom-0 left-2 h-16 w-32 -rotate-3 rounded-[48%_48%_20%_20%] border-4 border-[var(--rule)]" style={{ background: palette[1] }} />
-          <div className="absolute right-0 top-16 h-11 w-11 rotate-45 border-4 border-[var(--rule)]" style={{ background: palette[2] }} />
-        </div>
+    <main>
+      <article className="result-sheet" aria-label={`${result.code} ${result.name}结果档案`}>
+        <section className="result-block min-h-[100dvh] flex flex-col justify-center">
+          <div className="flex items-start justify-between gap-4"><p className="eyebrow">AITI TYPE</p><span className="label">本结果不负责，只负责说中</span></div>
+          <h1 className="result-code">{result.code}</h1>
+          <div className="my-7"><CharacterVisual result={result} priority /></div>
+          <p className="level-stamp">哄感 Lv.{level.level} · {level.name}</p>
+          <h2 className="result-name">{result.name}</h2>
+          {result.resultTitle && <p className="text-xl font-black">{result.resultTitle}</p>}
+          <p className="result-definition">{result.definition}</p>
+        </section>
+        <section className="result-block min-h-[100dvh] flex flex-col justify-center">
+          <p className="eyebrow">命中报告 / HIT REPORT</p>
+          <h2 className="section-title mt-4">你的电子死穴</h2>
+          <dl className="result-facts mt-8">
+            <div className="fact-card"><dt>致命AI台词</dt><dd>“{result.fatalLine}”</dd></div>
+            <div className="fact-card"><dt>平台更新暴击</dt><dd>{result.platformFear}</dd></div>
+            <div className="fact-card"><dt>舒服—可靠背离</dt><dd>{gapCopy}</dd></div>
+            <div className="fact-card"><dt>毒舌判词</dt><dd>{result.roast}</dd></div>
+          </dl>
+          <div className="panel mt-7 p-5"><p className="label">哄感等级说明</p><p className="text-xl font-black">Lv.{level.level} {level.name}</p><p className="leading-7">{level.resultCopy}</p><p className="text-sm leading-6 text-[var(--muted)]">{level.warningCopy}</p></div>
+        </section>
+        <section className="result-block min-h-[80dvh] flex flex-col justify-center">
+          <p className="eyebrow">安全彩蛋 / SAFETY NOTE</p>
+          <h2 className="section-title mt-4">它为什么这么准？</h2>
+          <p className="mt-7 text-xl font-bold leading-8">你刚才不是在选“正确答案”，而是在不同AI陪伴策略里暴露了更容易奏效的那一套。</p>
+          <div className="paper-card mt-6 p-5"><p className="label">对应研究概念</p><p className="text-lg font-black">{concepts}</p><p className="leading-7">{result.safetyNote ?? disclaimersContent.researchBoundary.resultMeaning}</p></div>
+          <p className="mt-7 border-t-2 border-[var(--rule)] pt-5 text-sm leading-7">{disclaimersContent.unifiedDisclaimer}</p>
+        </section>
+      </article>
+      <section className="no-print screen min-h-0 gap-3 pt-0">
+        <button className="button" onClick={() => setShareHint((value) => !value)}>保存 / 分享结果</button>
+        {shareHint && <div className="panel p-4" role="status"><p className="m-0 leading-7">当前页面已按长截图排版。用浏览器截图，或选择“打印 / 存为PDF”。正式分享卡将在 Phase 3 完成。</p><button className="text-link" onClick={() => window.print()}>打印 / 存为PDF</button></div>}
+        <button className="button secondary" onClick={() => { reset(); start(); router.push("/test"); }}>再测一次</button>
+        <Link className="button secondary" href="/types">看看其他16型</Link>
+        <Link className="button secondary" href="/research" onClick={() => track("research")}>查看研究</Link>
+        <VoteLink className="button warning" />
+        <p className="text-center font-bold">觉得这个问题值得被研究？为它投一票。</p>
+        <Link className="text-link text-center" href="/feedback">填写本地试玩反馈</Link>
       </section>
-      <section>
-        <h2 className="m-0 text-[30px] font-black leading-tight">{result.name}</h2>
-        <p className="mt-2 text-lg leading-7">{result.definition}</p>
-      </section>
-      <section className="panel p-4">
-        <h3 className="m-0 text-xl font-black">翻译成人话，就是：</h3>
-        <div className="mt-3 space-y-3 text-[16px] leading-7">
-          {resultExplanations.map((explanation) => <p className="m-0" key={explanation}>{explanation}</p>)}
-        </div>
-      </section>
-      <section>
-        <div className="border-l-[6px] border-[var(--accent)] bg-white p-4">
-          <p className="label m-0">你有多吃AI这一套 · Lv.{level.level}</p>
-          <p className="mb-0 mt-1 text-xl font-black">{level.name}</p>
-          <p className="mb-0 mt-2 leading-7">{level.resultCopy}</p>
-        </div>
-        <div className="mt-4 bg-white p-4">
-          <p className="m-0 font-black">“好听”和“靠谱”打架了 {score.comfortReliabilityGap} 次</p>
-          <p className="mb-0 mt-2 leading-7">{gapExplanation}</p>
-        </div>
-      </section>
-      <section className="space-y-3 text-[16px] leading-7">
-        <p><strong>哪句话最容易戳中你：</strong>{result.fatalLine}</p>
-        <p><strong>平台这样改，你最难受：</strong>{result.platformFear}</p>
-        <p><strong>损你一句：</strong>{result.roast}</p>
-        <p><strong>不过，还是提醒一句：</strong>{result.safetyNote ?? disclaimersContent.researchBoundary.resultMeaning}</p>
-      </section>
-      <aside className="border-t-2 border-[var(--rule)] pt-4 text-sm leading-6">
-        这不是人格诊断，也不预测真实心理依赖，只描述你在本次虚构互动中的选择路径。
-      </aside>
-      <div className="grid gap-3">
-        <Link className="button" href="/feedback">填写试玩反馈</Link>
-        <button className="button secondary" onClick={() => { reset(); start(); router.push("/test"); }}>清除旧状态并重新测试</button>
-      </div>
     </main>
   );
 }
