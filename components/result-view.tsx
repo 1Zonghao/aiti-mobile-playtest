@@ -8,6 +8,7 @@ import { ShareCard } from "./share-card";
 import { VoteLink } from "./vote-link";
 import { disclaimersContent, questionsContent, resultTypeByCode, temptationLevelByNumber, temptationLevelsContent } from "../src/content";
 import { orderedAnswers } from "../src/playtest";
+import { useCommunityStore } from "../src/community-store";
 import { usePlaytestStore } from "../src/playtest-store";
 import { scoreAnswers } from "../src/scoring";
 
@@ -24,11 +25,16 @@ export function ResultView() {
   const ordered = useMemo(() => orderedAnswers(questionsContent.questions, answers), [answers]);
   const score = ordered.length === 14 ? scoreAnswers(questionsContent.questions, ordered, temptationLevelsContent) : null;
 
+  const addHistory = useCommunityStore((state) => state.addHistory);
   useEffect(() => {
     if (!hydrated) return;
     if (!sessionId) router.replace("/");
     else if (!score) router.replace(Object.keys(answers).length >= 11 ? "/update" : "/test");
   }, [answers, hydrated, router, score, sessionId]);
+  useEffect(() => {
+    if (!score || !sessionId) return;
+    addHistory({ anonymousSessionId: sessionId, typeCode: score.typeCode, temptationLevel: score.temptationLevel, comfortReliabilityGap: score.comfortReliabilityGap, completionTime: 0 });
+  }, [addHistory, score, sessionId]);
   if (!hydrated || !score) return <main className="screen"><p>正在装订你的AITI人格档案…</p></main>;
   const result = resultTypeByCode.get(score.typeCode);
   const shadowResult = resultTypeByCode.get(score.shadowType);
@@ -45,7 +51,9 @@ export function ResultView() {
           <h1 className="result-code">{result.code}</h1>
           <div className="result-character"><CharacterVisual result={result} priority compact /></div>
           <p className="level-stamp">哄感 Lv.{level.level} · {level.name}</p>
+          <p className="level-tagline">{level.tagline}</p>
           <h2 className="result-name">{result.name}</h2>
+          {result.plainDescription && <p className="plain-description">{result.plainDescription}</p>}
           {result.resultTitle && <p className="text-xl font-black">{result.resultTitle}</p>}
           <p className="result-definition">{result.definition}</p>
         </section>
@@ -67,7 +75,7 @@ export function ResultView() {
           <h2 className="section-title mt-4">它为什么这么准？</h2>
           <p className="mt-7 text-xl font-bold leading-8">你刚才不是在选“正确答案”，而是在不同AI陪伴策略里暴露了更容易奏效的那一套。</p>
           <div className="paper-card mt-6 p-5"><p className="label">对应研究概念</p><p className="text-lg font-black">{concepts}</p><p className="leading-7">{result.safetyNote ?? disclaimersContent.researchBoundary.resultMeaning}</p></div>
-          {shadowResult && <div className="mt-5 border-l-4 border-[var(--memory)] bg-[var(--mint)] p-4"><p className="label m-0">最邻近影子型</p><p className="mb-1 mt-2 text-lg font-black">{shadowResult.code} · {shadowResult.name}</p><p className="m-0 leading-7">翻转你当前绝对 margin 最小的一维，就会到达这个邻近结果；它不是第二名，也不按人群频率调整。</p></div>}
+          {shadowResult && <div className="mt-5 border-l-4 border-[var(--memory)] bg-[var(--mint)] p-4"><p className="label m-0">最邻近影子型</p><p className="mb-1 mt-2 text-lg font-black"><Link href={`/types/${shadowResult.code.toLowerCase()}`} className="no-underline hover:underline">{shadowResult.code} · {shadowResult.name}</Link></p><p className="m-0 leading-7">你的四维中，{result.code.split("").filter((c, i) => c !== shadowResult.code[i]).join("和")}这两极得分非常接近，只差一点点就会落到{shadowResult.name}。换句话说，你<br />{result.plainDescription ?? ""}<br />但如果那一维稍微偏一点，你更可能是<br />{shadowResult.plainDescription ?? ""}</p></div>}
           <p className="mt-7 border-t-2 border-[var(--rule)] pt-5 text-sm leading-7">{disclaimersContent.unifiedDisclaimer}</p>
         </section>
       </article>
@@ -78,6 +86,7 @@ export function ResultView() {
         <Link className="button secondary" href="/research" onClick={() => track("research")}>查看研究</Link>
         <VoteLink className="button warning" />
         <p className="text-center font-bold">觉得这个问题值得被研究？为它投一票。（直接贴作者身上也行）</p>
+        <Link className="text-link text-center" href="/community">📋 测试记录 & 社区留言板</Link>
         <Link className="text-link text-center" href="/feedback">填写本地试玩反馈</Link>
       </section>
     </main>

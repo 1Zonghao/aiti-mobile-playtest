@@ -45,6 +45,7 @@ const resultTypeSchema = z.object({
   palette: z.object({ hex: z.array(z.string().regex(/^#[0-9A-F]{6}$/)).length(4).nullable(), description: z.string().min(1), status: contentStatusSchema }),
   visualKeywords: z.array(z.string().min(1)).min(1),
   imagePath: z.string().min(1).nullable(),
+  plainDescription: z.string().min(1).nullable(),
   featured: z.boolean(),
   priority: z.number().int().min(1).max(16),
   fieldStatus: z.object({ resultTitle: contentStatusSchema, safetyNote: contentStatusSchema, shareText: contentStatusSchema, imagePath: contentStatusSchema })
@@ -185,6 +186,7 @@ const temptationLevelSchema = z.object({
   minScore: z.number().int().min(0).max(100),
   maxScore: z.number().int().min(0).max(100),
   shortDescription: z.string().min(1),
+  tagline: z.string().min(1),
   resultCopy: z.string().min(1),
   shareCopy: z.string().min(1),
   warningCopy: z.string().min(1)
