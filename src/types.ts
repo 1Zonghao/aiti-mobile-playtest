@@ -40,6 +40,7 @@ export interface ResultType {
   palette: Palette;
   visualKeywords: string[];
   imagePath: string | null;
+  plainDescription: string | null;
   featured: boolean;
   priority: number;
   fieldStatus: { resultTitle: ContentStatus; safetyNote: ContentStatus; shareText: ContentStatus; imagePath: ContentStatus };
@@ -94,6 +95,7 @@ export interface TemptationLevelDefinition {
   minScore: number;
   maxScore: number;
   shortDescription: string;
+  tagline: string;
   resultCopy: string;
   shareCopy: string;
   warningCopy: string;
