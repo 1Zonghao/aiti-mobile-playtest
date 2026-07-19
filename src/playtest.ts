@@ -1,6 +1,9 @@
 import type { Answer, ScoreResult, TemptationLevel, TypeCode } from "./types";
 
 export const PLAYTEST_STORAGE_KEY = "aiti-playtest-v1";
+export const CONTENT_VERSION = "2026.07.18";
+export const SCORING_VERSION = "1.0.0";
+export const APP_VERSION = "2.0.0";
 export type YesNo = "yes" | "no";
 
 export interface PlaytestFeedback {
@@ -34,6 +37,13 @@ export interface PlaytestSession {
   answers: Record<string, string>;
   startedAt: number | null;
   completedAt: number | null;
+  currentQuestionIndex: number;
+  updateChoice: string | null;
+  result: Pick<ScoreResult, "typeCode" | "temptationLevel" | "comfortReliabilityGap"> | null;
+  completed: boolean;
+  contentVersion: string;
+  scoringVersion: string;
+  appVersion: string;
 }
 
 export function createAnonymousSessionId(): string {
@@ -41,7 +51,19 @@ export function createAnonymousSessionId(): string {
 }
 
 export function createEmptySession(): PlaytestSession {
-  return { anonymousSessionId: null, answers: {}, startedAt: null, completedAt: null };
+  return {
+    anonymousSessionId: null,
+    answers: {},
+    startedAt: null,
+    completedAt: null,
+    currentQuestionIndex: 0,
+    updateChoice: null,
+    result: null,
+    completed: false,
+    contentVersion: CONTENT_VERSION,
+    scoringVersion: SCORING_VERSION,
+    appVersion: APP_VERSION
+  };
 }
 
 export function orderedAnswers(questionIds: string[], answers: Record<string, string>): Answer[] {
@@ -56,7 +78,7 @@ export function completionTimeSeconds(startedAt: number | null, completedAt: num
   return Math.max(0, Math.round(((completedAt ?? now) - startedAt) / 1000));
 }
 
-export function createPlaytestRecord(session: PlaytestSession, score: ScoreResult, feedback: PlaytestFeedback, timestamp = new Date().toISOString()): PlaytestRecord {
+export function createPlaytestRecord(session: Pick<PlaytestSession, "anonymousSessionId" | "answers" | "startedAt" | "completedAt">, score: ScoreResult, feedback: PlaytestFeedback, timestamp = new Date().toISOString()): PlaytestRecord {
   if (!session.anonymousSessionId) throw new Error("试玩会话尚未开始。");
   return {
     anonymousSessionId: session.anonymousSessionId,
