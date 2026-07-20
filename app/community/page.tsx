@@ -1,65 +1,114 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { SiteHeader } from "../../components/site-header";
-import { addCloudComment, fetchComments } from "../../src/cloudbase";
-import type { CloudComment } from "../../src/cloudbase";
+import { addComment, getComments } from "../../src/cloudbase";
+import type { CommentItem } from "../../src/cloudbase";
 import { useCommunityStore } from "../../src/community-store";
 import { resultTypeByCode, temptationLevelByNumber } from "../../src/content";
+
+const NICK_MAX = 20;
+const CONTENT_MAX = 200;
+const PAGE_LIMIT = 30;
+
+function formatTime(iso: string): string {
+  if (!iso) return "";
+  try {
+    const d = new Date(iso);
+    if (isNaN(d.getTime())) return iso;
+    return d.toLocaleString("zh-CN", {
+      month: "numeric",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  } catch {
+    return iso;
+  }
+}
 
 export default function CommunityPage() {
   const [hydrated, setHydrated] = useState(false);
   useEffect(() => { setHydrated(true); }, []);
 
+  // history from localStorage
   const history = useCommunityStore((state) => state.history);
   const clearHistory = useCommunityStore((state) => state.clearHistory);
 
   // CloudBase comments
-  const [comments, setComments] = useState<CloudComment[]>([]);
+  const [comments, setComments] = useState<CommentItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const [cloudEnabled, setCloudEnabled] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const loadComments = useCallback(async () => {
     setLoading(true);
-    const data = await fetchComments(50);
-    if (data.length === 0) setCloudEnabled(false);
-    setComments(data);
-    setLoading(false);
+    setError(null);
+    try {
+      const data = await getComments(PAGE_LIMIT);
+      setComments(data);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "加载留言失败");
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
   useEffect(() => { if (hydrated) loadComments(); }, [hydrated, loadComments]);
 
-  // Submit
+  // Submit state
   const [nickname, setNickname] = useState("");
-  const [message, setMessage] = useState("");
+  const [content, setContent] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const [submitted, setSubmitted] = useState(false);
+  const submittingRef = useRef(false);
 
-  async function submit() {
-    const trimmed = message.trim();
-    if (!trimmed || submitting) return;
+  const trimmedNick = nickname.trim();
+  const trimmedContent = content.trim();
+  const canSubmit =
+    trimmedNick.length >= 1 &&
+    trimmedNick.length <= NICK_MAX &&
+    trimmedContent.length >= 1 &&
+    trimmedContent.length <= CONTENT_MAX &&
+    !submitting;
+
+  async function handleSubmit() {
+    if (!canSubmit || submittingRef.current) return;
+    submittingRef.current = true;
     setSubmitting(true);
-    const latest = history[0];
-    await addCloudComment({
-      nickname: nickname.trim() || "匿名用户",
-      message: trimmed,
-      resultType: latest?.typeCode ?? null,
-      temptationLevel: latest?.temptationLevel ?? null,
-    });
-    setMessage("");
-    setSubmitting(false);
-    setSubmitted(true);
-    setTimeout(() => setSubmitted(false), 2000);
-    loadComments();
+    setSubmitError(null);
+
+    try {
+      const result = await addComment({
+        nickname: trimmedNick,
+        content: trimmedContent,
+      });
+      if (result) {
+        // Prepend server-confirmed comment
+        setComments((prev) => [result, ...prev]);
+        setNickname("");
+        setContent("");
+        setSubmitted(true);
+        setTimeout(() => setSubmitted(false), 2000);
+      } else {
+        throw new Error("发布失败，请稍后重试");
+      }
+    } catch (err) {
+      setSubmitError(err instanceof Error ? err.message : "发布失败");
+    } finally {
+      setSubmitting(false);
+      submittingRef.current = false;
+    }
   }
 
-  if (!hydrated) return <main className="screen"><p>正在加载社区数据…</p></main>;
-
-  const disabledHint =
-    !cloudEnabled && comments.length === 0 && !loading
-      ? "评论服务尚未连接，请先部署 CloudBase 数据库。"
-      : null;
+  if (!hydrated) {
+    return (
+      <main className="screen">
+        <p>正在加载社区数据…</p>
+      </main>
+    );
+  }
 
   return (
     <main className="page-shell">
@@ -68,10 +117,10 @@ export default function CommunityPage() {
         <p className="eyebrow">COMMUNITY WALL</p>
         <h1 className="section-title mt-4">测试记录 & 社区留言板</h1>
         <p className="max-w-2xl text-lg leading-8">
-          留言实时同步到云端，所有用户都能看到。测试历史保存在当前设备中。
+          留言实时同步到云端，所有用户都能看到。你的测试历史保存在当前设备中。
         </p>
 
-        {/* History Section */}
+        {/* ── History ─────────────────────────────── */}
         <section className="mt-10">
           <div className="mb-5 flex items-center justify-between">
             <h2 className="text-2xl font-black">我的测试记录</h2>
@@ -96,23 +145,18 @@ export default function CommunityPage() {
           ) : (
             <div className="grid gap-3">
               {history.map((entry, index) => {
-                const result = resultTypeByCode.get(entry.typeCode);
-                const level = temptationLevelByNumber.get(entry.temptationLevel);
+                const r = resultTypeByCode.get(entry.typeCode);
+                const lv = temptationLevelByNumber.get(entry.temptationLevel);
                 return (
                   <div className="panel flex flex-wrap items-center gap-4 p-4" key={index}>
                     <Link href={`/types/${entry.typeCode.toLowerCase()}`} className="no-underline">
                       <strong className="text-lg">{entry.typeCode}</strong>
                     </Link>
-                    <span className="font-bold">{result?.name}</span>
-                    <span className="label">Lv.{entry.temptationLevel} {level?.name}</span>
+                    <span className="font-bold">{r?.name}</span>
+                    <span className="label">Lv.{entry.temptationLevel} {lv?.name}</span>
                     <span className="label">背离 {entry.comfortReliabilityGap} 次</span>
                     <span className="ml-auto text-sm text-[var(--muted)]">
-                      {new Date(entry.timestamp).toLocaleString("zh-CN", {
-                        month: "numeric",
-                        day: "numeric",
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })}
+                      {entry.timestamp ? formatTime(entry.timestamp) : ""}
                     </span>
                   </div>
                 );
@@ -121,53 +165,63 @@ export default function CommunityPage() {
           )}
         </section>
 
-        {/* Comment Wall */}
+        {/* ── Comments ────────────────────────────── */}
         <section className="mt-14">
           <h2 className="text-2xl font-black">社区留言板</h2>
           <p className="text-sm leading-6 text-[var(--muted)]">
-            留言实时同步，所有用户均可看到。每次刷新会拉取最新留言。
+            留言实时同步，所有用户均可看到。
           </p>
-          {disabledHint && (
-            <div className="panel mt-5 p-5 text-center">
-              <p className="m-0 font-bold text-[var(--warning)]">{disabledHint}</p>
-            </div>
-          )}
 
-          {/* Submit Form */}
+          {/* Submit form */}
           <div className="panel mt-5 grid gap-3 p-5">
-            <input
-              className="w-full border-b-2 border-[var(--rule)] px-2 py-3 text-lg font-bold outline-none"
-              placeholder="你的名字（选填）"
-              value={nickname}
-              maxLength={12}
-              onChange={(e) => setNickname(e.target.value)}
-            />
-            <textarea
-              className="w-full border-b-2 border-[var(--rule)] px-2 py-3 text-lg outline-none resize-none"
-              placeholder="说点什么…你的测试结果、感受、或者对AI陪伴的吐槽都行"
-              rows={3}
-              maxLength={300}
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" && !e.shiftKey) {
-                  e.preventDefault();
-                  submit();
-                }
-              }}
-            />
+            <div>
+              <input
+                className="w-full border-b-2 border-[var(--rule)] px-2 py-3 text-lg font-bold outline-none"
+                placeholder={`你的名字（1-${NICK_MAX}字）`}
+                value={nickname}
+                maxLength={NICK_MAX}
+                onChange={(e) => setNickname(e.target.value)}
+              />
+              <span className="text-xs text-[var(--muted)]">{trimmedNick.length}/{NICK_MAX}</span>
+            </div>
+            <div>
+              <textarea
+                className="w-full border-b-2 border-[var(--rule)] px-2 py-3 text-lg outline-none resize-none"
+                placeholder="说点什么…"
+                rows={3}
+                maxLength={CONTENT_MAX}
+                value={content}
+                onChange={(e) => setContent(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault();
+                    handleSubmit();
+                  }
+                }}
+              />
+              <span className="text-xs text-[var(--muted)]">{trimmedContent.length}/{CONTENT_MAX}</span>
+            </div>
+
+            {submitError && (
+              <p className="m-0 text-sm font-bold text-[var(--warning)]">{submitError}</p>
+            )}
+
             <div className="flex items-center gap-4">
-              <button className="button" onClick={submit} disabled={!message.trim() || submitting}>
-                {submitted ? "已发送 ✓" : submitting ? "发送中…" : "发布留言"}
+              <button className="button" onClick={handleSubmit} disabled={!canSubmit}>
+                {submitted ? "已发布 ✓" : submitting ? "发布中…" : "发布留言"}
               </button>
-              <span className="text-sm text-[var(--muted)]">{message.length}/300</span>
             </div>
           </div>
 
-          {/* CloudBase Comments */}
+          {/* Comment list */}
           {loading ? (
             <div className="panel mt-5 p-8 text-center">
-              <p className="m-0 text-lg font-bold text-[var(--muted)]">正在加载云端留言…</p>
+              <p className="m-0 text-lg font-bold text-[var(--muted)]">正在加载留言…</p>
+            </div>
+          ) : error ? (
+            <div className="panel mt-5 p-8 text-center">
+              <p className="m-0 font-bold text-[var(--warning)]">{error}</p>
+              <button className="text-link mt-3" onClick={loadComments}>点击重试</button>
             </div>
           ) : comments.length === 0 ? (
             <div className="panel mt-5 p-8 text-center">
@@ -177,44 +231,17 @@ export default function CommunityPage() {
             </div>
           ) : (
             <div className="mt-5 grid gap-4">
-              {comments.map((comment) => {
-                const result = comment.resultType
-                  ? resultTypeByCode.get(comment.resultType)
-                  : null;
-                const level =
-                  comment.temptationLevel !== null
-                    ? temptationLevelByNumber.get(comment.temptationLevel)
-                    : null;
-                return (
-                  <div className="panel p-4" key={comment._id ?? comment.createdAt}>
-                    <div className="mb-2 flex flex-wrap items-center gap-2">
-                      <strong>{comment.nickname}</strong>
-                      {result && (
-                        <Link
-                          href={`/types/${result.code.toLowerCase()}`}
-                          className="label no-underline hover:underline"
-                        >
-                          {result.code} · {result.name}
-                        </Link>
-                      )}
-                      {level && (
-                        <span className="label">
-                          Lv.{level.level} {level.name}
-                        </span>
-                      )}
-                      <span className="ml-auto text-xs text-[var(--muted)]">
-                        {new Date(comment.createdAt).toLocaleString("zh-CN", {
-                          month: "numeric",
-                          day: "numeric",
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })}
-                      </span>
-                    </div>
-                    <p className="m-0 leading-7">{comment.message}</p>
+              {comments.map((comment) => (
+                <div className="panel p-4" key={comment.id}>
+                  <div className="mb-2 flex items-center gap-3">
+                    <strong>{comment.nickname}</strong>
+                    <span className="ml-auto text-xs text-[var(--muted)]">
+                      {formatTime(comment.createdAt)}
+                    </span>
                   </div>
-                );
-              })}
+                  <p className="m-0 leading-7">{comment.content}</p>
+                </div>
+              ))}
               <button className="text-link mx-auto" onClick={loadComments}>
                 刷新留言
               </button>
