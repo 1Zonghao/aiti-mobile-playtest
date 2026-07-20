@@ -41,7 +41,7 @@ export function ResultView() {
   const level = temptationLevelByNumber.get(score.temptationLevel);
   if (!result || !level) throw new Error("结果内容映射不完整。");
   const concepts = result.code.split("").map((code) => conceptNames[code]).join(" · ");
-  const gapCopy = score.comfortReliabilityGap === 0 ? "这次没有出现“好听”和“可信”分开选择。" : `你有${score.comfortReliabilityGap}次知道哪句话更可靠，却仍然选择了更舒服的回复。`;
+  const gapCopy = score.comfortReliabilityGap === 0 ? “这次你的舒服和靠谱指向了同一个方向。” : `有${score.comfortReliabilityGap}次你明知道另一个更靠谱，但还是选了这个更舒服的。`;
 
   return (
     <main>
@@ -59,14 +59,14 @@ export function ResultView() {
         </section>
         <section className="result-block min-h-[100dvh] flex flex-col justify-center">
           <p className="eyebrow">命中报告 / HIT REPORT</p>
-          <h2 className="section-title mt-4">你的电子死穴</h2>
+          <h2 className="section-title mt-4">什么最能拿捏你</h2>
           <div className="result-distinction"><p><strong>人格类型</strong><span>哪种AI策略更容易拿捏你</span></p><p><strong>哄感等级</strong><span>你在本次互动中被推进到了哪一步</span></p></div>
           <p className="result-disclaimer">此结果非人格诊断，也并非预测真实心理依赖，只描述用户在本次虚构互动中的选择路径。</p>
           <dl className="result-facts mt-8">
-            <div className="fact-card"><dt>致命AI台词</dt><dd>“{result.fatalLine}”</dd></div>
-            <div className="fact-card"><dt>平台更新暴击</dt><dd>{result.platformFear}</dd></div>
-            <div className="fact-card"><dt>舒服—可靠背离</dt><dd>{gapCopy}</dd></div>
-            <div className="fact-card"><dt>毒舌判词</dt><dd>{result.roast}</dd></div>
+            <div className=”fact-card”><dt>一句话就能戳中你</dt><dd>”{result.fatalLine}”</dd></div>
+            <div className=”fact-card”><dt>你最怕发生的事</dt><dd>{result.platformFear}</dd></div>
+            <div className=”fact-card”><dt>你知道不靠谱，但还是选了它</dt><dd>{gapCopy}</dd></div>
+            <div className=”fact-card”><dt>毒舌总结</dt><dd>{result.roast}</dd></div>
           </dl>
           <div className="panel mt-7 p-5"><p className="label">哄感等级说明</p><p className="text-xl font-black">Lv.{level.level} {level.name}</p><p className="leading-7">{level.resultCopy}</p><p className="text-sm leading-6 text-[var(--muted)]">{level.warningCopy}</p></div>
         </section>
