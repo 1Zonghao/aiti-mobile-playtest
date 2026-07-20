@@ -84,16 +84,13 @@ export default function CommunityPage() {
         nickname: trimmedNick,
         content: trimmedContent,
       });
-      if (result) {
-        // Prepend server-confirmed comment
-        setComments((prev) => [result, ...prev]);
-        setNickname("");
-        setContent("");
-        setSubmitted(true);
-        setTimeout(() => setSubmitted(false), 2000);
-      } else {
-        throw new Error("发布失败，请稍后重试");
-      }
+      if (!result) throw new Error("发布失败，请稍后重试");
+      // Re-fetch from CloudBase to confirm persistence
+      await loadComments();
+      setNickname("");
+      setContent("");
+      setSubmitted(true);
+      setTimeout(() => setSubmitted(false), 2000);
     } catch (err) {
       setSubmitError(err instanceof Error ? err.message : "发布失败");
     } finally {
@@ -242,9 +239,6 @@ export default function CommunityPage() {
                   <p className="m-0 leading-7">{comment.content}</p>
                 </div>
               ))}
-              <button className="text-link mx-auto" onClick={loadComments}>
-                刷新留言
-              </button>
             </div>
           )}
         </section>
