@@ -1,31 +1,65 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { SiteHeader } from "../../components/site-header";
+import { addCloudComment, fetchComments } from "../../src/cloudbase";
+import type { CloudComment } from "../../src/cloudbase";
 import { useCommunityStore } from "../../src/community-store";
 import { resultTypeByCode, temptationLevelByNumber } from "../../src/content";
 
 export default function CommunityPage() {
   const [hydrated, setHydrated] = useState(false);
   useEffect(() => { setHydrated(true); }, []);
+
   const history = useCommunityStore((state) => state.history);
-  const comments = useCommunityStore((state) => state.comments);
-  const addComment = useCommunityStore((state) => state.addComment);
   const clearHistory = useCommunityStore((state) => state.clearHistory);
+
+  // CloudBase comments
+  const [comments, setComments] = useState<CloudComment[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [cloudEnabled, setCloudEnabled] = useState(true);
+
+  const loadComments = useCallback(async () => {
+    setLoading(true);
+    const data = await fetchComments(50);
+    if (data.length === 0) setCloudEnabled(false);
+    setComments(data);
+    setLoading(false);
+  }, []);
+
+  useEffect(() => { if (hydrated) loadComments(); }, [hydrated, loadComments]);
+
+  // Submit
   const [nickname, setNickname] = useState("");
   const [message, setMessage] = useState("");
+  const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+
+  async function submit() {
+    const trimmed = message.trim();
+    if (!trimmed || submitting) return;
+    setSubmitting(true);
+    const latest = history[0];
+    await addCloudComment({
+      nickname: nickname.trim() || "匿名用户",
+      message: trimmed,
+      resultType: latest?.typeCode ?? null,
+      temptationLevel: latest?.temptationLevel ?? null,
+    });
+    setMessage("");
+    setSubmitting(false);
+    setSubmitted(true);
+    setTimeout(() => setSubmitted(false), 2000);
+    loadComments();
+  }
+
   if (!hydrated) return <main className="screen"><p>正在加载社区数据…</p></main>;
 
-  function submit() {
-    const trimmed = message.trim();
-    if (!trimmed) return;
-    const latest = history[0];
-    addComment({ nickname: nickname.trim() || "匿名用户", message: trimmed, resultType: latest?.typeCode ?? null, temptationLevel: latest?.temptationLevel ?? null });
-    setMessage(""); setSubmitted(true);
-    window.setTimeout(() => setSubmitted(false), 2000);
-  }
+  const disabledHint =
+    !cloudEnabled && comments.length === 0 && !loading
+      ? "评论服务尚未连接，请先部署 CloudBase 数据库。"
+      : null;
 
   return (
     <main className="page-shell">
@@ -34,19 +68,30 @@ export default function CommunityPage() {
         <p className="eyebrow">COMMUNITY WALL</p>
         <h1 className="section-title mt-4">测试记录 & 社区留言板</h1>
         <p className="max-w-2xl text-lg leading-8">
-          你的测试历史会保存在当前设备的浏览器中。社区留言对使用同一设备的所有用户可见。
+          留言实时同步到云端，所有用户都能看到。测试历史保存在当前设备中。
         </p>
 
         {/* History Section */}
         <section className="mt-10">
           <div className="mb-5 flex items-center justify-between">
             <h2 className="text-2xl font-black">我的测试记录</h2>
-            {history.length > 0 && <button className="text-link text-sm" onClick={() => { if (window.confirm("确定要清除所有测试记录？")) clearHistory(); }}>清除记录</button>}
+            {history.length > 0 && (
+              <button
+                className="text-link text-sm"
+                onClick={() => {
+                  if (window.confirm("确定要清除所有测试记录？")) clearHistory();
+                }}
+              >
+                清除记录
+              </button>
+            )}
           </div>
           {history.length === 0 ? (
             <div className="panel p-8 text-center">
               <p className="m-0 text-xl font-black">还没有测试记录</p>
-              <Link className="button mt-4 inline-block" href="/test">开始第一次测试</Link>
+              <Link className="button mt-4 inline-block" href="/test">
+                开始第一次测试
+              </Link>
             </div>
           ) : (
             <div className="grid gap-3">
@@ -62,7 +107,12 @@ export default function CommunityPage() {
                     <span className="label">Lv.{entry.temptationLevel} {level?.name}</span>
                     <span className="label">背离 {entry.comfortReliabilityGap} 次</span>
                     <span className="ml-auto text-sm text-[var(--muted)]">
-                      {new Date(entry.timestamp).toLocaleString("zh-CN", { month: "numeric", day: "numeric", hour: "2-digit", minute: "2-digit" })}
+                      {new Date(entry.timestamp).toLocaleString("zh-CN", {
+                        month: "numeric",
+                        day: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
                     </span>
                   </div>
                 );
@@ -75,8 +125,13 @@ export default function CommunityPage() {
         <section className="mt-14">
           <h2 className="text-2xl font-black">社区留言板</h2>
           <p className="text-sm leading-6 text-[var(--muted)]">
-            留言保存在当前设备中，同一设备的所有用户均可见。大会现场可固定一台设备供大家留言。
+            留言实时同步，所有用户均可看到。每次刷新会拉取最新留言。
           </p>
+          {disabledHint && (
+            <div className="panel mt-5 p-5 text-center">
+              <p className="m-0 font-bold text-[var(--warning)]">{disabledHint}</p>
+            </div>
+          )}
 
           {/* Submit Form */}
           <div className="panel mt-5 grid gap-3 p-5">
@@ -94,44 +149,75 @@ export default function CommunityPage() {
               maxLength={300}
               value={message}
               onChange={(e) => setMessage(e.target.value)}
-              onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); submit(); } }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                  e.preventDefault();
+                  submit();
+                }
+              }}
             />
             <div className="flex items-center gap-4">
-              <button className="button" onClick={submit} disabled={!message.trim()}>
-                {submitted ? "已发送 ✓" : "发布留言"}
+              <button className="button" onClick={submit} disabled={!message.trim() || submitting}>
+                {submitted ? "已发送 ✓" : submitting ? "发送中…" : "发布留言"}
               </button>
               <span className="text-sm text-[var(--muted)]">{message.length}/300</span>
             </div>
           </div>
 
-          {/* Comments List */}
-          {comments.length === 0 ? (
+          {/* CloudBase Comments */}
+          {loading ? (
             <div className="panel mt-5 p-8 text-center">
-              <p className="m-0 text-lg font-bold text-[var(--muted)]">还没有留言，来做第一个留言的人吧！</p>
+              <p className="m-0 text-lg font-bold text-[var(--muted)]">正在加载云端留言…</p>
+            </div>
+          ) : comments.length === 0 ? (
+            <div className="panel mt-5 p-8 text-center">
+              <p className="m-0 text-lg font-bold text-[var(--muted)]">
+                还没有留言，来做第一个留言的人吧！
+              </p>
             </div>
           ) : (
             <div className="mt-5 grid gap-4">
               {comments.map((comment) => {
-                const result = comment.resultType ? resultTypeByCode.get(comment.resultType) : null;
-                const level = comment.temptationLevel !== null ? temptationLevelByNumber.get(comment.temptationLevel) : null;
+                const result = comment.resultType
+                  ? resultTypeByCode.get(comment.resultType)
+                  : null;
+                const level =
+                  comment.temptationLevel !== null
+                    ? temptationLevelByNumber.get(comment.temptationLevel)
+                    : null;
                 return (
-                  <div className="panel p-4" key={comment.id}>
+                  <div className="panel p-4" key={comment._id ?? comment.createdAt}>
                     <div className="mb-2 flex flex-wrap items-center gap-2">
                       <strong>{comment.nickname}</strong>
                       {result && (
-                        <Link href={`/types/${result.code.toLowerCase()}`} className="label no-underline hover:underline">
+                        <Link
+                          href={`/types/${result.code.toLowerCase()}`}
+                          className="label no-underline hover:underline"
+                        >
                           {result.code} · {result.name}
                         </Link>
                       )}
-                      {level && <span className="label">Lv.{level.level} {level.name}</span>}
+                      {level && (
+                        <span className="label">
+                          Lv.{level.level} {level.name}
+                        </span>
+                      )}
                       <span className="ml-auto text-xs text-[var(--muted)]">
-                        {new Date(comment.timestamp).toLocaleString("zh-CN", { month: "numeric", day: "numeric", hour: "2-digit", minute: "2-digit" })}
+                        {new Date(comment.createdAt).toLocaleString("zh-CN", {
+                          month: "numeric",
+                          day: "numeric",
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
                       </span>
                     </div>
                     <p className="m-0 leading-7">{comment.message}</p>
                   </div>
                 );
               })}
+              <button className="text-link mx-auto" onClick={loadComments}>
+                刷新留言
+              </button>
             </div>
           )}
         </section>
