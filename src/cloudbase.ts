@@ -16,7 +16,7 @@ export interface CloudComment {
 const AUTH_KEY = "aiti_tcb_token";
 const DEVICE_KEY = "aiti_device_id";
 
-let cachedToken: string | null = null;
+let cachedToken = "";
 
 function deviceId(): string {
   if (typeof localStorage === "undefined") return "";
@@ -59,7 +59,7 @@ async function tcbCall(action: string, body: Record<string, unknown>) {
   );
   if (!res.ok) {
     // clear cached token on auth error
-    if (res.status === 401) cachedToken = null;
+    if (res.status === 401) cachedToken = "";
     throw new Error(`CloudBase error: ${res.status}`);
   }
   return res.json();
