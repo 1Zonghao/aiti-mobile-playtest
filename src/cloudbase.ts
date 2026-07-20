@@ -14,31 +14,40 @@ export interface CloudComment {
 }
 
 const AUTH_KEY = "aiti_tcb_token";
+const DEVICE_KEY = "aiti_device_id";
+
+let cachedToken = "";
+
+function deviceId(): string {
+  if (typeof localStorage === "undefined") return "";
+  const stored = localStorage.getItem(DEVICE_KEY);
+  if (stored) return stored;
+  const id = Math.random().toString(36).substring(2, 15) + Date.now().toString(36);
+  localStorage.setItem(DEVICE_KEY, id);
+  return id;
+}
 
 async function getToken(): Promise<string> {
-  const cached = globalThis.localStorage?.getItem(AUTH_KEY);
-  if (cached) return cached;
+  if (cachedToken) return cachedToken;
 
   const res = await fetch(
-    `https://${ENV_ID}.service.tcloudbase.com/auth/v1/signin`,
+    `https://${ENV_ID}.api.tcloudbasegateway.com/auth/v1/signin/anonymously`,
     {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ anonymous_token: "aiti-guest" }),
+      headers: { "x-device-id": deviceId() },
     }
   );
-  if (!res.ok) throw new Error("auth failed");
+  if (!res.ok) throw new Error(`auth failed: ${res.status}`);
   const data = await res.json();
-  const token = data.access_token ?? "";
-  if (token) globalThis.localStorage?.setItem(AUTH_KEY, token);
-  return token;
+  cachedToken = data.access_token ?? "";
+  return cachedToken;
 }
 
 async function tcbCall(action: string, body: Record<string, unknown>) {
   if (!ENV_ID) throw new Error("missing env id");
   const token = await getToken();
   const res = await fetch(
-    `https://${ENV_ID}.service.tcloudbase.com/database/${action}`,
+    `https://${ENV_ID}.api.tcloudbasegateway.com/v1/rdb/${action}`,
     {
       method: "POST",
       headers: {
@@ -48,7 +57,11 @@ async function tcbCall(action: string, body: Record<string, unknown>) {
       body: JSON.stringify(body),
     }
   );
-  if (!res.ok) throw new Error(`CloudBase error: ${res.status}`);
+  if (!res.ok) {
+    // clear cached token on auth error
+    if (res.status === 401) cachedToken = "";
+    throw new Error(`CloudBase error: ${res.status}`);
+  }
   return res.json();
 }
 
