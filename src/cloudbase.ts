@@ -20,11 +20,10 @@ let cachedToken: string | null = null;
 
 function deviceId(): string {
   if (typeof localStorage === "undefined") return "";
-  let id = localStorage.getItem(DEVICE_KEY);
-  if (!id) {
-    id = Math.random().toString(36).substring(2, 15) + Date.now().toString(36);
-    localStorage.setItem(DEVICE_KEY, id);
-  }
+  const stored = localStorage.getItem(DEVICE_KEY);
+  if (stored) return stored;
+  const id = Math.random().toString(36).substring(2, 15) + Date.now().toString(36);
+  localStorage.setItem(DEVICE_KEY, id);
   return id;
 }
 
