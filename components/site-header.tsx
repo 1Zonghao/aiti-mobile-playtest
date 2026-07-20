@@ -7,7 +7,6 @@ export function SiteHeader({ compact = false }: { compact?: boolean }) {
       <nav aria-label="主要导航">
         <Link href="/types">16型</Link>
         <Link href="/research">研究</Link>
-        <Link href="/community">社区</Link>
         <Link href="/about">说明</Link>
       </nav>
     </header>

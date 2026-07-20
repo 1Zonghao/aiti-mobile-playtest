@@ -86,7 +86,6 @@ export function ResultView() {
         <Link className="button secondary" href="/research" onClick={() => track("research")}>查看研究</Link>
         <VoteLink className="button warning" />
         <p className="text-center font-bold">觉得这个问题值得被研究？为它投一票。（直接贴作者身上也行）</p>
-        <Link className="text-link text-center" href="/community">📋 测试记录 & 社区留言板</Link>
         <Link className="text-link text-center" href="/feedback">填写本地试玩反馈</Link>
       </section>
     </main>
