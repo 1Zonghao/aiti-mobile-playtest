@@ -13,10 +13,12 @@ const officialCodes = new Set<TypeCode>([
 
 export const ASSETS_VERSION = "20260720v2";
 
+const BASE_PATH = process.env.GITHUB_PAGES === "true" ? "/aiti-mobile-playtest" : "";
+
 export const characterAssets = Object.fromEntries(
   ["VOMS", "VOME", "VONS", "VONE", "VPMS", "VPME", "VPNS", "VPNE", "FOMS", "FOME", "FONS", "FONE", "FPMS", "FPME", "FPNS", "FPNE"].map((code) => [
     code,
-    { code, src: `/characters/${code.toLowerCase()}.webp?v=${ASSETS_VERSION}`, official: officialCodes.has(code as TypeCode) }
+    { code, src: `${BASE_PATH}/characters/${code.toLowerCase()}.webp?v=${ASSETS_VERSION}`, official: officialCodes.has(code as TypeCode) }
   ])
 ) as Record<TypeCode, CharacterAsset>;
 
