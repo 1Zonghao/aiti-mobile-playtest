@@ -1,7 +1,6 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { QRCodeSVG } from "qrcode.react";
 import { CharacterVisual } from "./character-visual";
 import { getSiteConfig } from "../src/site";
 import type { ResultType, TemptationLevelDefinition } from "../src/types";
@@ -57,7 +56,7 @@ export function ShareCard({ result, shadowResult, level }: { result: ResultType;
         <p className="share-shadow">影子类型：{shadowResult ? `${shadowResult.code} · ${shadowResult.name}` : "—"}</p>
       </div>
       <footer className="share-card-foot">
-        <div>{site.status === "available" ? <><QRCodeSVG value={site.url} size={74} bgColor="#fffdf7" fgColor="#173f35" level="M" /><span>{site.url}</span></> : <span>扫码地址待现场配置</span>}</div>
+        <div>{site.status === "available" ? <a href={site.url} target="_blank" rel="noopener noreferrer"><img src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(site.url)}`} alt="网站二维码" width={74} height={74} style={{ display: "block" }} /><span>{site.url}</span></a> : <span>扫码地址待现场配置</span>}</div>
         <strong>本结果仅供娱乐</strong>
       </footer>
     </div>
