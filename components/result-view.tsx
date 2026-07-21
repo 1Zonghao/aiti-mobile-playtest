@@ -3,9 +3,11 @@
 import Link from "next/link";
 import { useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
+import { QRCodeSVG } from "qrcode.react";
 import { CharacterVisual } from "./character-visual";
 import { ShareCard } from "./share-card";
 import { VoteLink } from "./vote-link";
+import { getSiteConfig } from "../src/site";
 import { disclaimersContent, questionsContent, resultTypeByCode, temptationLevelByNumber, temptationLevelsContent } from "../src/content";
 import { orderedAnswers } from "../src/playtest";
 import { useCommunityStore } from "../src/community-store";
@@ -40,6 +42,8 @@ export function ResultView() {
   const shadowResult = resultTypeByCode.get(score.shadowType);
   const level = temptationLevelByNumber.get(score.temptationLevel);
   if (!result || !level) throw new Error("结果内容映射不完整。");
+  const site = getSiteConfig(process.env.NEXT_PUBLIC_SITE_URL);
+  const paperUrl = site.status === "available" ? `${site.url}/paper.pdf` : "";
   const concepts = result.code.split("").map((code) => conceptNames[code]).join(" · ");
   const gapCopy = score.comfortReliabilityGap === 0 ? "这次你的舒服和靠谱指向了同一个方向。" : "有" + score.comfortReliabilityGap + "次你明知道另一个更靠谱，但还是选了这个更舒服的。";
 
@@ -76,6 +80,7 @@ export function ResultView() {
           <p className="mt-7 text-xl font-bold leading-8">你刚才不是在选「正确答案」，而是在不同AI陪伴策略里暴露了更容易奏效的那一套。</p>
           <div className="paper-card mt-6 p-5"><p className="label">对应研究概念</p><p className="text-lg font-black">{concepts}</p><p className="leading-7">{result.safetyNote ?? disclaimersContent.researchBoundary.resultMeaning}</p></div>
           {shadowResult && <div className="mt-5 border-l-4 border-[var(--memory)] bg-[var(--mint)] p-4"><p className="label m-0">最邻近影子型</p><p className="mb-1 mt-2 text-lg font-black"><Link href={`/types/${shadowResult.code.toLowerCase()}`} className="no-underline hover:underline">{shadowResult.code} · {shadowResult.name}</Link></p><p className="m-0 leading-7" style={{ textWrap: "auto" }}>{result.code.split("").filter((c, i) => c !== shadowResult.code[i]).join("和")}这两极你的得分非常接近，只差一点点就会变成{shadowResult.name}。</p><p className="m-0 mt-2 leading-7" style={{ textWrap: "auto" }}>现在的你：{result.plainDescription ?? ""}</p><p className="m-0 mt-2 leading-7" style={{ textWrap: "auto" }}>稍微偏一点就是：{shadowResult.plainDescription ?? ""}</p></div>}
+          {paperUrl && <div className="mt-5 grid grid-cols-[auto_1fr] items-center gap-5 border-2 border-dashed border-[var(--rule)] bg-[var(--paper)] p-5"><QRCodeSVG value={paperUrl} size={100} bgColor="#fffdf7" fgColor="#173f35" level="M" /><div><p className="label m-0 mb-2">📄 论文原文</p><p className="m-0 text-sm leading-6 font-bold">《爱的是她，还是被算法过拟合的你自己》</p><p className="m-0 mt-1 text-xs text-[var(--muted)] leading-5">扫码或长按识别二维码，阅读完整研究论文。不登录、不追踪，永久可访问。</p></div></div>}
           <p className="mt-7 border-t-2 border-[var(--rule)] pt-5 text-sm leading-7">{disclaimersContent.unifiedDisclaimer}</p>
         </section>
       </article>
